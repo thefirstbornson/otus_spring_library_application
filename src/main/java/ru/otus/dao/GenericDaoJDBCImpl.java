@@ -1,8 +1,12 @@
 package ru.otus.dao;
 
+import org.springframework.jdbc.core.RowMapper;
+
 import java.util.List;
 
 public abstract class GenericDaoJDBCImpl<T> implements GenericDao<T> {
+
+    private RowMapper<T> rowMapper;
 
     @Override
     public T findById(long id) {
@@ -33,4 +37,13 @@ public abstract class GenericDaoJDBCImpl<T> implements GenericDao<T> {
     public void delete(T object) {
 
     }
+
+    public RowMapper<T> getRowMapper() {
+        return (rowMapper == null)
+                ? createRowMapper()
+                :rowMapper;
+    }
+
+    public abstract RowMapper<T> createRowMapper();
+
 }

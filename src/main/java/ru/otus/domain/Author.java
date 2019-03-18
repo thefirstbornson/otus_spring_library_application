@@ -12,6 +12,9 @@ public class Author {
         this.author_last_name = author_last_name;
     }
 
+    public Author() {
+    }
+
     public long getAuthor_id() {
         return author_id;
     }
