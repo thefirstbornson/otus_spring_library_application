@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class GenericDaoJDBCImpl<T> implements GenericDao<T> {
+    private final String tableName;
 
     protected final NamedParameterJdbcOperations jdbcOperations;
 
-
-    protected GenericDaoJDBCImpl(NamedParameterJdbcOperations jdbcOperations) {
+    protected GenericDaoJDBCImpl(String tableName, NamedParameterJdbcOperations jdbcOperations) {
+        this.tableName = tableName;
         this.jdbcOperations = jdbcOperations;
     }
 
@@ -44,6 +45,11 @@ public abstract class GenericDaoJDBCImpl<T> implements GenericDao<T> {
     public abstract void delete(T object);
 
     public abstract RowMapper<T> getRowMapper();
-    public abstract String getTableName();
+
+    public String getTableName(){
+        return tableName;
+    }
+
+
 
 }

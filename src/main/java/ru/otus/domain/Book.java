@@ -2,12 +2,17 @@ package ru.otus.domain;
 
 public class Book {
     private long id;
+    private String name;
     private Author author;
     private Genre genre;
 
-    public Book(Author author, Genre genre) {
+    public Book(String name,Author author, Genre genre) {
+        this.name=name;
         this.author = author;
         this.genre = genre;
+    }
+
+    public Book() {
     }
 
     public long getId() {
@@ -34,6 +39,14 @@ public class Book {
         this.genre = genre;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -42,15 +55,17 @@ public class Book {
         Book book = (Book) o;
 
         if (id != book.id) return false;
-        if (!author.equals(book.author)) return false;
-        return genre.equals(book.genre);
+        if (name != null ? !name.equals(book.name) : book.name != null) return false;
+        if (author != null ? !author.equals(book.author) : book.author != null) return false;
+        return genre != null ? genre.equals(book.genre) : book.genre == null;
     }
 
     @Override
     public int hashCode() {
         int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + author.hashCode();
-        result = 31 * result + genre.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (author != null ? author.hashCode() : 0);
+        result = 31 * result + (genre != null ? genre.hashCode() : 0);
         return result;
     }
 
@@ -58,6 +73,7 @@ public class Book {
     public String toString() {
         return "Book{" +
                 "id=" + id +
+                ", name='" + name + '\'' +
                 ", author=" + author +
                 ", genre=" + genre +
                 '}';
