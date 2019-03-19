@@ -4,7 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.shell.jline.ScriptShellApplicationRunner;
@@ -18,7 +22,13 @@ import static org.junit.Assert.*;
 //        InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
 //        ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
 //})
+@JdbcTest
+@ComponentScan
+@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
 public class AuthorDaoJDBCImplTest {
+
+    private static final String NAME = "Fedor";
+    private static final String SURNAME = "Dostoevsky";
 
     @Autowired
     AuthorDao authorDataJDBC;
@@ -26,7 +36,7 @@ public class AuthorDaoJDBCImplTest {
 
     @Before
     public void setUp(){
-        author = new Author("Fedor","Dostoevsky");
+        author = new Author(NAME,SURNAME);
     }
 
     @Test

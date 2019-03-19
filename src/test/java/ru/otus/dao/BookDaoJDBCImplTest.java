@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,24 +15,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
-
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
-//@JdbcTest(properties = {
-//        InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
-//        ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
-//})
-
-
-
 //@SpringBootTest(properties = {
 //        InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
 //        ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
 //})
 
 @JdbcTest
-@Import({BookDaoJDBCImpl.class,AuthorDaoJDBCImpl.class,GenreDaoJDBCImpl.class})
+@ComponentScan
+@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
 public class BookDaoJDBCImplTest {
     @Autowired
     BookDao bookDaoJDBC;
@@ -71,7 +65,7 @@ public class BookDaoJDBCImplTest {
 
     @Test
     public void findById(){
-        System.out.println(bookDaoJDBC.findById(99));
+        System.out.println(bookDaoJDBC.findById(1));
     }
 
     @Test
