@@ -1,49 +1,49 @@
 package ru.otus.dao;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class GenericDaoJDBCImpl<T> implements GenericDao<T> {
 
-    private RowMapper<T> rowMapper;
+    protected final NamedParameterJdbcOperations jdbcOperations;
+
+
+    protected GenericDaoJDBCImpl(NamedParameterJdbcOperations jdbcOperations) {
+        this.jdbcOperations = jdbcOperations;
+    }
 
     @Override
     public T findById(long id) {
-        return null;
+        Map<String, Object> params = Collections.singletonMap("id", id);
+        return jdbcOperations.queryForObject(
+                "select * from "+getTableName()+" where id = :id", params, getRowMapper());
     }
 
     @Override
     public List<T> findAll() {
-        return null;
+        return jdbcOperations.query("select * from "+getTableName(),getRowMapper());
     }
 
     @Override
     public Long getCount() {
-        return null;
+        return jdbcOperations.queryForObject("select count(*) from "+getTableName(),new HashMap<>(),Long.class);
     }
 
     @Override
-    public T save(T entity) {
-        return null;
-    }
+    public abstract T save(T entity);
 
     @Override
-    public void update(T object) {
-
-    }
+    public abstract void update(T object) ;
 
     @Override
-    public void delete(T object) {
+    public abstract void delete(T object);
 
-    }
-
-    public RowMapper<T> getRowMapper() {
-        return (rowMapper == null)
-                ? createRowMapper()
-                :rowMapper;
-    }
-
-    public abstract RowMapper<T> createRowMapper();
+    public abstract RowMapper<T> getRowMapper();
+    public abstract String getTableName();
 
 }

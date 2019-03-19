@@ -2,12 +2,11 @@ package ru.otus.domain;
 
 public class Author {
 
-    private long author_id;
+    private long id;
     private String author_first_name;
     private String author_last_name;
 
-    public Author(long author_id, String author_first_name, String author_last_name) {
-        this.author_id = author_id;
+    public Author(String author_first_name, String author_last_name) {
         this.author_first_name = author_first_name;
         this.author_last_name = author_last_name;
     }
@@ -15,12 +14,12 @@ public class Author {
     public Author() {
     }
 
-    public long getAuthor_id() {
-        return author_id;
+    public long getId() {
+        return id;
     }
 
-    public void setAuthor_id(long author_id) {
-        this.author_id = author_id;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getAuthor_first_name() {
@@ -47,14 +46,14 @@ public class Author {
 
         Author author = (Author) o;
 
-        if (author_id != author.author_id) return false;
+        if (id != author.id) return false;
         if (!author_first_name.equals(author.author_first_name)) return false;
         return author_last_name.equals(author.author_last_name);
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (author_id ^ (author_id >>> 32));
+        int result = (int) (id ^ (id >>> 32));
         result = 31 * result + author_first_name.hashCode();
         result = 31 * result + author_last_name.hashCode();
         return result;
@@ -63,7 +62,7 @@ public class Author {
     @Override
     public String toString() {
         return "Author{" +
-                "author_id=" + author_id +
+                "id=" + id +
                 ", author_first_name='" + author_first_name + '\'' +
                 ", author_last_name='" + author_last_name + '\'' +
                 '}';

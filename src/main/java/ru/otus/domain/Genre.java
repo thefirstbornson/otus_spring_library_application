@@ -1,20 +1,19 @@
 package ru.otus.domain;
 
 public class Genre {
-    private long genreCode;
+    private long id;
     private String genreName;
 
-    public Genre(long genreCode, String genreName) {
-        this.genreCode = genreCode;
+    public Genre(String genreName) {
         this.genreName = genreName;
     }
 
-    public long getGenreCode() {
-        return genreCode;
+    public long getId() {
+        return id;
     }
 
-    public void setGenreCode(long genreCode) {
-        this.genreCode = genreCode;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getGenreName() {
@@ -32,13 +31,13 @@ public class Genre {
 
         Genre genre = (Genre) o;
 
-        if (genreCode != genre.genreCode) return false;
+        if (id != genre.id) return false;
         return genreName.equals(genre.genreName);
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (genreCode ^ (genreCode >>> 32));
+        int result = (int) (id ^ (id >>> 32));
         result = 31 * result + genreName.hashCode();
         return result;
     }
@@ -46,7 +45,7 @@ public class Genre {
     @Override
     public String toString() {
         return "Genre{" +
-                "genreCode=" + genreCode +
+                "id=" + id +
                 ", genreName='" + genreName + '\'' +
                 '}';
     }

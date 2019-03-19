@@ -5,8 +5,7 @@ public class Book {
     private Author author;
     private Genre genre;
 
-    public Book(long id, Author author, Genre genre) {
-        this.id = id;
+    public Book(Author author, Genre genre) {
         this.author = author;
         this.genre = genre;
     }
