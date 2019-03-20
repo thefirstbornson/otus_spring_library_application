@@ -2,7 +2,7 @@ package ru.otus.dao;
 
 import java.util.List;
 
-interface GenericDao<T> {
+public interface GenericDao<T> {
     T findById(long id);
 
     List<T> findAll();
@@ -11,7 +11,7 @@ interface GenericDao<T> {
 
     T save(T entity);
 
-    public void update(T object) ;
+    void update(T object) ;
 
-    public void delete(T object);
+    void delete(T object);
 }
