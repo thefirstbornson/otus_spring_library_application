@@ -7,28 +7,28 @@ import org.springframework.shell.standard.ShellMethod;
 import ru.otus.dao.DaoFactory;
 import ru.otus.dao.GenericDao;
 
-import java.util.Map;
-
 @ShellComponent
 public class AppCommands {
-    //private final Map<String, GenericDao> daoMap;
+    private final DaoFactory daoFactory;
 
     @Autowired
     public AppCommands(DaoFactory daoFactory) {
-      //  this.daoMap = daoMap;
+        this.daoFactory = daoFactory;
     }
 
 
     @ShellMethod("print dao beans")
-    public void create(){
+    public void create(String entityName){
+        System.out.println(getDao(entityName));
 //        long i = 0;
 //        for (Map.Entry<String, GenericDao> pair : daoMap.entrySet()) {
 //            System.out.println(pair.getKey()+" - " +pair.getValue());
 //        }
 
     }
-    @ShellMethod("print dao by entityname")
+
     private GenericDao getDao(String entityName){
+       return daoFactory.getDaoByEntityName(entityName);
 
     }
 }
