@@ -6,6 +6,12 @@ public class Author {
     private String author_first_name;
     private String author_last_name;
 
+    public Author(long id, String author_first_name, String author_last_name) {
+        this.id = id;
+        this.author_first_name = author_first_name;
+        this.author_last_name = author_last_name;
+    }
+
     public Author(String author_first_name, String author_last_name) {
         this.author_first_name = author_first_name;
         this.author_last_name = author_last_name;
