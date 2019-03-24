@@ -21,47 +21,48 @@ public class AppCommands {
 
 
     @ShellMethod("create and save instance")
-    public void create(String entityName){
+    public String create(String entityName){
         CreateUpdateServise cuService =shellInputMatcher.getServise(entityName);
         GenericDao genericDao = shellInputMatcher.getDao(entityName);
-        ioService.showText(genericDao.save(cuService.create())+"\n");
+        return genericDao.save(cuService.create()).toString();
     }
 
     @ShellMethod("update instance")
-    public void update(String entityName){
+    public String update(String entityName){
         CreateUpdateServise cuService =shellInputMatcher.getServise(entityName);
         GenericDao genericDao = shellInputMatcher.getDao(entityName);
         genericDao.update(cuService.update());
-        ioService.showText("Instance updated."+"\n");
+        return "Instance updated.";
     }
 
     @ShellMethod("delete instance")
-    public void delete(String entityName){
+    public String delete(String entityName){
         GenericDao genericDao = shellInputMatcher.getDao(entityName);
         try {
             genericDao.delete(genericDao.findById(Long.parseLong(ioService.userInput("Enter ID: "))));
-            ioService.showText("Instance deleted."+"\n");
+            return "Instance deleted.";
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
+        return "Instance deletion failed.";
     }
 
     @ShellMethod("show instance")
-    public void show(String entityName){
+    public String show(String entityName){
         GenericDao genericDao = shellInputMatcher.getDao(entityName);
-        ioService.showText(genericDao.findById(Long.parseLong(ioService.userInput("Enter ID: ")))+"\n");
+        return genericDao.findById(Long.parseLong(ioService.userInput("Enter ID: "))).toString();
     }
 
     @ShellMethod("show all instances")
-    public void showAll(String entityName){
+    public String showAll(String entityName){
         GenericDao genericDao = shellInputMatcher.getDao(entityName);
-        ioService.showText(genericDao.findAll()+ "\n");
+        return genericDao.findAll().toString();
     }
 
     @ShellMethod("count total entities")
-    public void count(String entityName){
+    public String count(String entityName){
         GenericDao genericDao = shellInputMatcher.getDao(entityName);
-        ioService.showText("Total count of '" + entityName +"' : " + genericDao.getCount()+ "\n");
+       return "Total count of '" + entityName +"' : " + genericDao.getCount();
     }
 }
 

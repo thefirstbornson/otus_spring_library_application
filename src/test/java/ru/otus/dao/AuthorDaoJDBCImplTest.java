@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -14,8 +15,16 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.shell.jline.ScriptShellApplicationRunner;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.domain.Author;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
 //@SpringBootTest(properties = {
@@ -23,14 +32,19 @@ import ru.otus.domain.Author;
 //        ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
 //})
 @JdbcTest
-@ComponentScan
+@ComponentScan({"ru.otus.dao"})
 @AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
+@TestPropertySource( "classpath:test-application.properties")
 public class AuthorDaoJDBCImplTest {
 
     private static final String NAME = "Fedor";
     private static final String SURNAME = "Dostoevsky";
-    private static final String NAME1 = "Viktor";
-    private static final String SURNAME1 = "Pelevin";
+    private static final String NAME2 = "Viktor";
+    private static final String SURNAME2 = "Pelevin";
+    private static final String NAME3 = "Alexander";
+    private static final String SURNAME3 = "Filipenko";
+    private static final String NAME4 = "Boris";
+    private static final String SURNAME4 = "Akunin";
 
     @Autowired
     AuthorDao authorDataJDBC;
@@ -39,16 +53,26 @@ public class AuthorDaoJDBCImplTest {
     @Before
     public void setUp(){
         author = new Author(NAME,SURNAME);
+
     }
 
     @Test
     public void getCountTest(){
-        System.out.println(authorDataJDBC.getCount());
+        Assert.assertEquals(3L,(long) authorDataJDBC.getCount());
     }
 
     @Test
     public void findAllTest(){
-        System.out.println(authorDataJDBC.findAll());
+        Author[] authArr = {author,new Author(NAME2,SURNAME2),new Author(NAME3,SURNAME3)};
+        List<String> testAuthorsNames = Arrays.asList(authArr)
+                                         .stream()
+                                         .map(e->e.getAuthor_first_name())
+                                         .collect(Collectors.toList());
+        List<String> dbAuthorsNames = authorDataJDBC.findAll().stream()
+                                         .map(e->e.getAuthor_first_name())
+                                         .collect(Collectors.toList());
+        Assert.assertTrue(testAuthorsNames.containsAll(dbAuthorsNames)
+                          && dbAuthorsNames.containsAll(testAuthorsNames));
     }
 
     @Test
@@ -64,23 +88,22 @@ public class AuthorDaoJDBCImplTest {
 
     @Test
     public void findByIdTest(){
-        authorDataJDBC.save(author);
-        Author result = authorDataJDBC.findById(author.getId());
-        Assert.assertTrue(author.getAuthor_first_name().equals(NAME));
-        Assert.assertTrue(author.getAuthor_last_name().equals(SURNAME));
-        System.out.println(authorDataJDBC.save(author));
+        Author result = authorDataJDBC.findById(99);
+        Assert.assertTrue(result.getAuthor_first_name().equals(NAME));
+        Assert.assertTrue(result.getAuthor_last_name().equals(SURNAME));
     }
 
 
     @Test
     public void updateTest(){
-        authorDataJDBC.save(author);
-        author.setAuthor_first_name(NAME1);
-        author.setAuthor_last_name(SURNAME1);
+        author=authorDataJDBC.findById(99);
+        author.setAuthor_first_name(NAME4);
+        author.setAuthor_last_name(SURNAME4);
         authorDataJDBC.update(author);
-        Assert.assertTrue(author.getAuthor_first_name().equals(NAME1));
-        Assert.assertTrue(author.getAuthor_last_name().equals(SURNAME1));
-        System.out.println(author);
+        Assert.assertTrue( authorDataJDBC.findById(author.getId())
+                .getAuthor_first_name().equals(NAME4));
+        Assert.assertTrue( authorDataJDBC.findById(author.getId())
+                .getAuthor_last_name().equals(SURNAME4));
     }
 
     @Test(expected = EmptyResultDataAccessException.class)
