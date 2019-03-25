@@ -21,18 +21,19 @@ public abstract class GenericDaoJDBCImpl<T> implements GenericDao<T> {
     @Override
     public T findById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
-        return jdbcOperations.queryForObject(
-                "select * from "+getTableName()+" where id = :id", params, getRowMapper());
+        return jdbcOperations.queryForObject(String.format("select * from %s where id = :id",getTableName())
+                , params, getRowMapper());
     }
 
     @Override
     public List<T> findAll() {
-        return jdbcOperations.query("select * from "+getTableName(),getRowMapper());
+        return jdbcOperations.query(String.format("select * from %s",getTableName()),getRowMapper());
     }
 
     @Override
     public Long getCount() {
-        return jdbcOperations.queryForObject("select count(*) from "+getTableName(),new HashMap<>(),Long.class);
+        return jdbcOperations.queryForObject(String.format("select count(*) from %s",getTableName())
+                ,new HashMap<>(),Long.class);
     }
 
     @Override

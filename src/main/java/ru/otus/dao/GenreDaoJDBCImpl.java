@@ -26,7 +26,7 @@ public class GenreDaoJDBCImpl extends GenericDaoJDBCImpl<Genre> implements Genre
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("genreN", genre.getGenreName());
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcOperations.update("insert into "+this.getTableName() +" (NAME) values (:genreN)"
+        jdbcOperations.update(String.format("insert into %s (NAME) values (:genreN)",this.getTableName())
                 ,parameters,keyHolder,new String[]{"id"});
         genre.setId(keyHolder.getKey().longValue());
         return genre;
@@ -37,18 +37,15 @@ public class GenreDaoJDBCImpl extends GenericDaoJDBCImpl<Genre> implements Genre
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("genreId",genre.getId())
                 .addValue("genreN", genre.getGenreName());
-        jdbcOperations.update("update "+this.getTableName()
-                        +" set NAME=:genreN "
-                        +" where id =:genreId"
+        jdbcOperations.update(String.format("update %s set NAME=:genreN"
+                        +" where id =:genreId",this.getTableName())
                 , parameters);
     }
 
     @Override
     public void delete(Genre genre) {
         Map<String, Object> params = Collections.singletonMap("id", genre.getId());
-        jdbcOperations.update(
-                "delete from "+this.getTableName()+" where id = :id", params
-        );
+        jdbcOperations.update(String.format("delete from %s where id = :id",this.getTableName()), params );
     }
 
     @Override

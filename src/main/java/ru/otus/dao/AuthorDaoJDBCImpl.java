@@ -22,11 +22,11 @@ public class AuthorDaoJDBCImpl extends GenericDaoJDBCImpl<Author> implements Aut
     @Override
     public Author save(Author author) {
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("firstN", author.getAuthor_first_name())
-                .addValue("lastN", author.getAuthor_last_name());
+                .addValue("firstN", author.getFirstName())
+                .addValue("lastN", author.getLastName());
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcOperations.update("insert into "+this.getTableName() +" (FIRST_NAME, LAST_NAME) values (:firstN, :lastN)"
-                ,parameters,keyHolder,new String[]{"id"});
+        jdbcOperations.update(String.format("insert into %s (FIRST_NAME, LAST_NAME) values (:firstN, :lastN)"
+                                    , this.getTableName()),parameters,keyHolder,new String[]{"id"});
         author.setId(keyHolder.getKey().longValue());
         return author;
     }
@@ -35,20 +35,17 @@ public class AuthorDaoJDBCImpl extends GenericDaoJDBCImpl<Author> implements Aut
     public void update(Author author) {
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("authorId",author.getId())
-                .addValue("firstN", author.getAuthor_first_name())
-                .addValue("lastN", author.getAuthor_last_name());
-        jdbcOperations.update("update "+this.getTableName()
-                               +" set FIRST_NAME=:firstN, LAST_NAME=:lastN "
-                               +" where id =:authorId"
+                .addValue("firstN", author.getFirstName())
+                .addValue("lastN", author.getLastName());
+        jdbcOperations.update(String.format("update %s set FIRST_NAME=:firstN, LAST_NAME=:lastN " +
+                        " where id =:authorId",this.getTableName())
                 , parameters);
     }
 
     @Override
     public void delete(Author author) {
         Map<String, Object> params = Collections.singletonMap("id", author.getId());
-        jdbcOperations.update(
-                "delete from "+this.getTableName()+" where id = :id", params
-        );
+        jdbcOperations.update(String.format("delete from %s where id = :id",this.getTableName()), params);
     }
 
     @Override
@@ -56,8 +53,8 @@ public class AuthorDaoJDBCImpl extends GenericDaoJDBCImpl<Author> implements Aut
         return (ResultSet result, int rowNum) -> {
                 Author author = new Author();
                 author.setId(result.getLong("ID"));
-                author.setAuthor_first_name(result.getString("FIRST_NAME"));
-                author.setAuthor_last_name(result.getString("LAST_NAME"));
+                author.setFirstName(result.getString("FIRST_NAME"));
+                author.setLastName(result.getString("LAST_NAME"));
                 return author;
         };
     }

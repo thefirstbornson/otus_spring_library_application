@@ -13,23 +13,24 @@ import java.util.Map;
 
 @Service
 public class ShellInputMatcherImpl implements ShellInputMatcher {
-    private final AuthorCUService authorCUService;
-    private final GenreCUService genreCUService;
-    private final BookCUService bookCUService;
-    private final AuthorDao authorDao;
-    private final GenreDao genreDao;
-    private final BookDao bookDao;
+//    private final AuthorCUService authorCUService;
+//    private final GenreCUService genreCUService;
+//    private final BookCUService bookCUService;
+//    private final AuthorDao authorDao;
+//    private final GenreDao genreDao;
+//    private final BookDao bookDao;
     private final Map<String,CreateUpdateServise> services = new HashMap<>();
     private final Map<String,GenericDao> daoList = new HashMap<>();
 
     @Autowired
-    public ShellInputMatcherImpl(AuthorCUService authorCUService, GenreCUService genreCUService, BookCUService bookCUService, AuthorDao authorDao, GenreDao genreDao, BookDao bookDao) {
-        this.authorCUService= authorCUService;
-        this.genreCUService = genreCUService;
-        this.bookCUService = bookCUService;
-        this.authorDao = authorDao;
-        this.genreDao = genreDao;
-        this.bookDao = bookDao;
+    public ShellInputMatcherImpl(AuthorCUService authorCUService, GenreCUService genreCUService
+            , BookCUService bookCUService, AuthorDao authorDao, GenreDao genreDao, BookDao bookDao) {
+//        this.authorCUService= authorCUService;
+//        this.genreCUService = genreCUService;
+//        this.bookCUService = bookCUService;
+//        this.authorDao = authorDao;
+//        this.genreDao = genreDao;
+//        this.bookDao = bookDao;
         services.put("author",authorCUService);
         services.put("genre",genreCUService);
         services.put("book",bookCUService);

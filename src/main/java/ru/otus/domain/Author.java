@@ -3,18 +3,18 @@ package ru.otus.domain;
 public class Author {
 
     private long id;
-    private String author_first_name;
-    private String author_last_name;
+    private String firstName;
+    private String lastName;
 
-    public Author(long id, String author_first_name, String author_last_name) {
+    public Author(long id, String firstName, String lastName) {
         this.id = id;
-        this.author_first_name = author_first_name;
-        this.author_last_name = author_last_name;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
-    public Author(String author_first_name, String author_last_name) {
-        this.author_first_name = author_first_name;
-        this.author_last_name = author_last_name;
+    public Author(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public Author() {
@@ -28,20 +28,20 @@ public class Author {
         this.id = id;
     }
 
-    public String getAuthor_first_name() {
-        return author_first_name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setAuthor_first_name(String author_first_name) {
-        this.author_first_name = author_first_name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getAuthor_last_name() {
-        return author_last_name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setAuthor_last_name(String author_last_name) {
-        this.author_last_name = author_last_name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
 
@@ -53,15 +53,15 @@ public class Author {
         Author author = (Author) o;
 
         if (id != author.id) return false;
-        if (!author_first_name.equals(author.author_first_name)) return false;
-        return author_last_name.equals(author.author_last_name);
+        if (!firstName.equals(author.firstName)) return false;
+        return lastName.equals(author.lastName);
     }
 
     @Override
     public int hashCode() {
         int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + author_first_name.hashCode();
-        result = 31 * result + author_last_name.hashCode();
+        result = 31 * result + firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
         return result;
     }
 
@@ -69,8 +69,8 @@ public class Author {
     public String toString() {
         return "Author{" +
                 "id=" + id +
-                ", author_first_name='" + author_first_name + '\'' +
-                ", author_last_name='" + author_last_name + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 '}';
     }
 }

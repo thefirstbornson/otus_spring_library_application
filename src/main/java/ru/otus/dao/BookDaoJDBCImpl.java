@@ -33,8 +33,8 @@ public class BookDaoJDBCImpl  extends GenericDaoJDBCImpl<Book> implements BookDa
                 .addValue("genreId",book.getGenre().getId());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcOperations.update("insert into "+this.getTableName()
-                        +" (NAME, AUTHOR_ID, GENRE_ID) values (:name, :authorId, :genreId)"
+        jdbcOperations.update(String.format("insert into %s (NAME, AUTHOR_ID, GENRE_ID) " +
+                        "values (:name, :authorId, :genreId)", this.getTableName())
                 ,parameters,keyHolder,new String[]{"id"});
         book.setId(keyHolder.getKey().longValue());
         return book;
@@ -47,9 +47,8 @@ public class BookDaoJDBCImpl  extends GenericDaoJDBCImpl<Book> implements BookDa
                 .addValue("name", book.getName())
                 .addValue("authorId", book.getAuthor().getId())
                 .addValue("genreId",book.getGenre().getId());
-        jdbcOperations.update("update "+this.getTableName()
-                        +" set NAME=:name, AUTHOR_ID=:authorId, GENRE_ID=:genreId "
-                        +" where id =:id"
+        jdbcOperations.update(String.format("update %s set NAME=:name, AUTHOR_ID=:authorId, GENRE_ID=:genreId "
+                        +" where id =:id",this.getTableName())
                 , parameters);
 
     }
@@ -57,9 +56,7 @@ public class BookDaoJDBCImpl  extends GenericDaoJDBCImpl<Book> implements BookDa
     @Override
     public void delete(Book book) {
         Map<String, Object> params = Collections.singletonMap("id", book.getId());
-        jdbcOperations.update(
-                "delete from "+this.getTableName()+" where id = :id", params
-        );
+        jdbcOperations.update(String.format("delete from %s where id = :id",this.getTableName()), params);
     }
 
     @Override
