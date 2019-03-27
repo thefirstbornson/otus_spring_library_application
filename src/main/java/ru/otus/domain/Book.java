@@ -1,13 +1,17 @@
 package ru.otus.domain;
 
+import org.springframework.data.repository.cdi.Eager;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "book")
 public class Book {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "name")
     private String name;
@@ -17,8 +21,8 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "genre_id")
     private Genre genre;
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true )
-    private List<BookComment> comments;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true,fetch = FetchType.EAGER)
+    private List<BookComment> comments=new ArrayList<>();
 
 
     public Book(String name,Author author, Genre genre) {
@@ -61,6 +65,23 @@ public class Book {
         this.genre = genre;
     }
 
+    @Override
+    public String toString() {
+        String auth = author!=null ? author.getLastName():"";
+        String gen = genre!=null? genre.getGenreName():"";
+        String  comm = comments!=null? comments.stream()
+                                               .map(BookComment::getComment)
+                                               .collect(Collectors.joining("; "))
+                                     :"";
+        return "Book{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", author=" + auth +
+                ", genre=" + gen +
+                ", comments=" + comm+
+                '}';
+    }
+
     public String getName() {
         return name;
     }
@@ -91,13 +112,4 @@ public class Book {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", author=" + author +
-                ", genre=" + genre +
-                '}';
-    }
 }

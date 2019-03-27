@@ -4,13 +4,14 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(name = "genre")
 public class Genre {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "name")
     private String genreName;
-    @OneToMany(mappedBy = "genre",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "genre",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Book> books;
 
     public Genre(long id, String genreName) {

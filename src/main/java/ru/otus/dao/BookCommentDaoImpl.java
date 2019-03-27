@@ -1,9 +1,11 @@
 package ru.otus.dao;
 
+import org.springframework.stereotype.Repository;
 import ru.otus.domain.BookComment;
 
+@Repository
 public class BookCommentDaoImpl extends GenericDaoJpaImpl<BookComment> implements BookCommentDao {
-    protected BookCommentDaoImpl() {
+    public BookCommentDaoImpl() {
         super(BookComment.class);
     }
 }

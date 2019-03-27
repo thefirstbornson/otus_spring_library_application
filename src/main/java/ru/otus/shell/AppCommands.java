@@ -50,7 +50,12 @@ public class AppCommands {
     @ShellMethod("show instance")
     public String show(String entityName){
         GenericDao genericDao = shellInputMatcher.getDao(entityName);
-        return genericDao.findById(Long.parseLong(ioService.userInput("Enter ID: "))).toString();
+        try {
+            return genericDao.findById(Long.parseLong(ioService.userInput("Enter ID: "))).toString();
+        }catch (NullPointerException e){
+            ioService.showText(String.format("There is no %s with such ID"+"\n",entityName));
+        }
+        return null ;
     }
 
     @ShellMethod("show all instances")

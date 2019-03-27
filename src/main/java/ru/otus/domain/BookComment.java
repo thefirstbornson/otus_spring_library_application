@@ -3,9 +3,10 @@ package ru.otus.domain;
 import javax.persistence.*;
 
 @Entity
+@Table(name="book_comment")
 public class BookComment{
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "comment")
     private String comment;
@@ -16,8 +17,9 @@ public class BookComment{
     public BookComment() {
     }
 
-    public BookComment(String comment) {
+    public BookComment(String comment, Book book) {
         this.comment = comment;
+        this.book = book;
     }
 
     public long getId() {
@@ -33,6 +35,23 @@ public class BookComment{
         return "BookComment{" +
                 "id=" + id +
                 ", comment='" + comment + '\'' +
+                ", book=" + book.getName() +
                 '}';
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
     }
 }

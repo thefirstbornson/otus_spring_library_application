@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.TestPropertySource;
@@ -18,11 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
-//@SpringBootTest(properties = {
-//        InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
-//        ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
-//})
-@JdbcTest
+@DataJpaTest
 @ComponentScan({"ru.otus.dao"})
 @AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource( "classpath:test-application.properties")
@@ -38,7 +35,7 @@ public class AuthorDaoJDBCImplTest {
     private static final String SURNAME4 = "Akunin";
 
     @Autowired
-    AuthorDao authorDataJDBC;
+    AuthorDao authorDataJpa;
     Author author;
 
     @Before
@@ -49,7 +46,7 @@ public class AuthorDaoJDBCImplTest {
 
     @Test
     public void getCountTest(){
-        Assert.assertEquals(3L,(long) authorDataJDBC.getCount());
+        Assert.assertEquals(3L,(long) authorDataJpa.getCount());
     }
 
     @Test
@@ -59,7 +56,7 @@ public class AuthorDaoJDBCImplTest {
                                          .stream()
                                          .map(e->e.getFirstName())
                                          .collect(Collectors.toList());
-        List<String> dbAuthorsNames = authorDataJDBC.findAll().stream()
+        List<String> dbAuthorsNames = authorDataJpa.findAll().stream()
                                          .map(e->e.getFirstName())
                                          .collect(Collectors.toList());
         Assert.assertTrue(testAuthorsNames.containsAll(dbAuthorsNames)
@@ -68,18 +65,18 @@ public class AuthorDaoJDBCImplTest {
 
     @Test
     public void saveTest(){
-        authorDataJDBC.save(author);
+        authorDataJpa.save(author);
         Assert.assertTrue(author.getId()>0);
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test
     public void notFoundByIdTest(){
-        Author result = authorDataJDBC.findById(author.getId());
+        Assert.assertNull(authorDataJpa.findById(author.getId()));
     }
 
     @Test
     public void findByIdTest(){
-        Author result = authorDataJDBC.findById(99);
+        Author result = authorDataJpa.findById(99);
         Assert.assertTrue(result.getFirstName().equals(NAME));
         Assert.assertTrue(result.getLastName().equals(SURNAME));
     }
@@ -87,20 +84,21 @@ public class AuthorDaoJDBCImplTest {
 
     @Test
     public void updateTest(){
-        author=authorDataJDBC.findById(99);
+        author= authorDataJpa.findById(99);
         author.setFirstName(NAME4);
         author.setLastName(SURNAME4);
-        authorDataJDBC.update(author);
-        Assert.assertTrue( authorDataJDBC.findById(author.getId())
+        authorDataJpa.update(author);
+        Assert.assertTrue( authorDataJpa.findById(author.getId())
                 .getFirstName().equals(NAME4));
-        Assert.assertTrue( authorDataJDBC.findById(author.getId())
+        Assert.assertTrue( authorDataJpa.findById(author.getId())
                 .getLastName().equals(SURNAME4));
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test
     public void deleteTest(){
-        authorDataJDBC.save(author);
-        authorDataJDBC.delete(author);
-        authorDataJDBC.findById(author.getId());
+        authorDataJpa.save(author);
+        long id = author.getId();
+        authorDataJpa.delete(author);
+        Assert.assertNull(authorDataJpa.findById(id));
     }
 }

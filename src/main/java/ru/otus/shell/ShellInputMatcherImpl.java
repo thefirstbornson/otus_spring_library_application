@@ -2,10 +2,7 @@ package ru.otus.shell;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.otus.dao.AuthorDao;
-import ru.otus.dao.BookDao;
-import ru.otus.dao.GenericDao;
-import ru.otus.dao.GenreDao;
+import ru.otus.dao.*;
 import ru.otus.instance_service.*;
 
 import java.util.HashMap;
@@ -18,13 +15,16 @@ public class ShellInputMatcherImpl implements ShellInputMatcher {
 
     @Autowired
     public ShellInputMatcherImpl(AuthorCUService authorCUService, GenreCUService genreCUService
-            , BookCUService bookCUService, AuthorDao authorDao, GenreDao genreDao, BookDao bookDao) {
+            , BookCUService bookCUService, BookCommentCUService bookCommentCUService, AuthorDao authorDao
+            , GenreDao genreDao, BookDao bookDao, BookCommentDao bookCommentDao) {
         services.put("author",authorCUService);
         services.put("genre",genreCUService);
         services.put("book",bookCUService);
+        services.put("bookcomment",bookCommentCUService);
         daoList.put("author",authorDao);
         daoList.put("genre", genreDao);
         daoList.put("book", bookDao);
+        daoList.put("bookcomment", bookCommentDao);
     }
 
     public CreateUpdateServise getServise(String instanceType) {

@@ -1,5 +1,7 @@
 package ru.otus.dao;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
@@ -8,11 +10,11 @@ import java.util.List;
 public abstract class GenericDaoJpaImpl<T>  implements GenericDao<T>{
 
     @PersistenceContext
-    private EntityManager em;
+    EntityManager em;
 
-    private final Class<T> entityClass;
+    final Class<T> entityClass;
 
-    protected GenericDaoJpaImpl(Class<T> entityClass) {
+    public GenericDaoJpaImpl(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
@@ -38,18 +40,22 @@ public abstract class GenericDaoJpaImpl<T>  implements GenericDao<T>{
     }
 
     @Override
+    @Transactional
     public T save(T entity){
         em.persist(entity);
         return entity;
     }
 
     @Override
+    @Transactional
     public T update(T entity){
         return em.merge(entity);
+
     }
 
     @Override
+    @Transactional
     public void delete(T entity){
-        em.remove(entity);
+        em.remove(em.contains(entity) ? entity : em.merge(entity));
     }
 }
