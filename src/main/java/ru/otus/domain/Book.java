@@ -1,10 +1,25 @@
 package ru.otus.domain;
 
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "book")
 public class Book {
+    @Id
+    @GeneratedValue
     private long id;
+    @Column(name = "name")
     private String name;
+    @ManyToOne
+    @JoinColumn(name="author_id")
     private Author author;
+    @ManyToOne
+    @JoinColumn(name = "genre_id")
     private Genre genre;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true )
+    private List<BookComment> comments;
+
 
     public Book(String name,Author author, Genre genre) {
         this.name=name;

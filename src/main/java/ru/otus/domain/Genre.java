@@ -1,8 +1,17 @@
 package ru.otus.domain;
 
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
 public class Genre {
+    @Id
+    @GeneratedValue
     private long id;
+    @Column(name = "name")
     private String genreName;
+    @OneToMany(mappedBy = "genre",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Book> books;
 
     public Genre(long id, String genreName) {
         this.id = id;

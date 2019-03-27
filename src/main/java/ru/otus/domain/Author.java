@@ -1,10 +1,20 @@
 package ru.otus.domain;
 
-public class Author {
+import javax.persistence.*;
+import java.util.List;
 
+@Entity
+@Table(name = "author")
+public class Author {
+    @Id
+    @GeneratedValue
     private long id;
+    @Column(name = "first_name")
     private String firstName;
+    @Column(name = "last_name")
     private String lastName;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Book> books;
 
     public Author(long id, String firstName, String lastName) {
         this.id = id;
