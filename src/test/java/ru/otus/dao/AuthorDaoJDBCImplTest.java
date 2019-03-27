@@ -18,10 +18,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
+
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ComponentScan({"ru.otus.dao"})
-@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
+//@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = NONE)
 @TestPropertySource( "classpath:test-application.properties")
 public class AuthorDaoJDBCImplTest {
 
