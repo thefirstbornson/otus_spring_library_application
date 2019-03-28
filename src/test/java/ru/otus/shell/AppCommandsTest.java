@@ -28,9 +28,13 @@ import static org.mockito.BDDMockito.given;
 })
 @ComponentScan
 @AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
-@TestPropertySource( "classpath:test-application.properties")
+@TestPropertySource("classpath:application-test.properties")
 @Transactional
 public class AppCommandsTest {
+    private static final  String TESTAUTHOR = "Author{id=100, firstName='Dan', lastName='Simmons'}";
+    private static final  String AUTHORSTRING1 = "Author{id=99, firstName='Fedor', lastName='Dostoevsky'}";
+    private static final  String AUTHORSTRING2 = "Author{id=88, firstName='Viktor', lastName='Pelevin'}";
+    private static final  String AUTHORSTRING3 =  "Author{id=77, firstName='Alexander', lastName='Filipenko'}";
     @MockBean
     ShellInputMatcher shellInputMatcher;
     @MockBean
@@ -50,16 +54,15 @@ public class AppCommandsTest {
 
     @Test
     public void create() {
-        assertEquals("Author{id=1, firstName='Dan', lastName='Simmons'}"
-                ,appCommands.create("author"));
+        assertEquals(TESTAUTHOR ,appCommands.create("author"));
     }
 
     @Test
     public void showAll() {
-        assertEquals("[Author{id=99, firstName='Fedor', lastName='Dostoevsky'}" +
-                ", Author{id=88, firstName='Viktor', lastName='Pelevin'}" +
-                ", Author{id=77, firstName='Alexander', lastName='Filipenko'}]"
-                ,appCommands.showAll("author"));
+        String commandResult = appCommands.showAll("author");
+        assertTrue(commandResult.contains(AUTHORSTRING1)
+                && commandResult.contains(AUTHORSTRING2)
+                && commandResult.contains(AUTHORSTRING3));
     }
 
     @Test

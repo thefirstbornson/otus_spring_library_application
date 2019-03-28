@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.domain.Genre;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 @DataJpaTest
 @ComponentScan({"ru.otus.dao"})
 @AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
-@TestPropertySource( "classpath:test-application.properties")
+@TestPropertySource("classpath:application-test.properties")
 public class GenreDaoJDBCImplTest {
     private static final String NAME = "Drama";
     private static final String NAME2 = "Sci-fi";

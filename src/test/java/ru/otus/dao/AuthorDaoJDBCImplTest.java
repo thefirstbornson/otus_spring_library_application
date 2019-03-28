@@ -1,19 +1,19 @@
 package ru.otus.dao;
 
+import org.h2.tools.Console;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.domain.Author;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,11 +21,13 @@ import java.util.stream.Collectors;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
 @RunWith(SpringRunner.class)
-@DataJpaTest
+//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
+//        , properties = {"spring.h2.console.enabled=true"})
+@DataJpaTest(properties = {"spring.h2.console.enabled=true"})
 @ComponentScan({"ru.otus.dao"})
 //@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
 @AutoConfigureTestDatabase(replace = NONE)
-@TestPropertySource( "classpath:test-application.properties")
+@TestPropertySource("classpath:application-test.properties")
 public class AuthorDaoJDBCImplTest {
 
     private static final String NAME = "Fedor";
