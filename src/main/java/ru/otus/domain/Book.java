@@ -1,14 +1,8 @@
 package ru.otus.domain;
 
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.springframework.data.repository.cdi.Eager;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Entity
 @Table(name = "book")

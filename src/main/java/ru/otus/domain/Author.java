@@ -17,7 +17,6 @@ public class Author {
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
-    //@BatchSize(size = 2)
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "author", orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Book> books;

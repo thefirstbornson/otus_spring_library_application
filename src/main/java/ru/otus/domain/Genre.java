@@ -15,7 +15,6 @@ public class Genre {
     private long id;
     @Column(name = "name")
     private String genreName;
-    //@BatchSize(size = 2)
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "genre",orphanRemoval = true,fetch = FetchType.EAGER)
     private List<Book> books;

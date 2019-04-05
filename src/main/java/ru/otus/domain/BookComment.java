@@ -35,7 +35,6 @@ public class BookComment{
         return "BookComment{" +
                 "id=" + id +
                 ", comment='" + comment + '\'' +
-                //", book=" + book.getName() +
                 '}';
     }
 
