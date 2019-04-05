@@ -1,6 +1,7 @@
 package ru.otus.dao;
 
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.domain.Book;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,20 +25,10 @@ public abstract class GenericDaoJpaImpl<T>  implements GenericDao<T>{
     }
 
     @Override
-    public List<T> findAll() {
-        CriteriaQuery<T> c =
-                em.getCriteriaBuilder().createQuery(entityClass);
-        c.select(c.from(entityClass));
-        return em.createQuery(c).getResultList();
-    }
+    public abstract List<T> findAll();
 
     @Override
-    public Long getCount() {
-        CriteriaQuery<Long> c =
-                em.getCriteriaBuilder().createQuery(Long.class);
-        c.select(em.getCriteriaBuilder().count(c.from(entityClass)));
-        return em.createQuery(c).getSingleResult();
-    }
+    public abstract Long getCount() ;
 
     @Override
     @Transactional
@@ -56,6 +47,6 @@ public abstract class GenericDaoJpaImpl<T>  implements GenericDao<T>{
     @Override
     @Transactional
     public void delete(T entity){
-        em.remove(em.contains(entity) ? entity : em.merge(entity));
+        em.remove(em.merge(entity));
     }
 }

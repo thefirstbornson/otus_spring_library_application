@@ -19,9 +19,8 @@ import java.util.stream.Collectors;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ComponentScan({"ru.otus.dao"})
-@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource("classpath:application-test.properties")
-public class BookDaoJDBCImplTest {
+public class BookDaoJpaImplTest {
     private static final String NAME = "Anna Karenina";
     private static final String NAME2 = "Snuff";
     private static final String NAME3 = "Red Cross";

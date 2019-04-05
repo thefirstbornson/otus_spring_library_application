@@ -19,9 +19,8 @@ import java.util.stream.Collectors;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ComponentScan({"ru.otus.dao"})
-@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource("classpath:application-test.properties")
-public class GenreDaoJDBCImplTest {
+public class GenreDaoJpaImplTest {
     private static final String NAME = "Drama";
     private static final String NAME2 = "Sci-fi";
     private static final String NAME3 = "Historical Drama";
@@ -34,7 +33,6 @@ public class GenreDaoJDBCImplTest {
     @Before
     public void setUp(){
         genre = new Genre(NAME);
-
     }
 
     @Test

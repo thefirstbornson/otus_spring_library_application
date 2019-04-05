@@ -10,7 +10,7 @@ public class BookComment{
     private long id;
     @Column(name = "comment")
     private String comment;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="book_id")
     private Book book;
 
@@ -35,7 +35,7 @@ public class BookComment{
         return "BookComment{" +
                 "id=" + id +
                 ", comment='" + comment + '\'' +
-                ", book=" + book.getName() +
+                //", book=" + book.getName() +
                 '}';
     }
 

@@ -27,11 +27,10 @@ import static org.mockito.BDDMockito.given;
         ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
 })
 @ComponentScan
-@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource("classpath:application-test.properties")
 @Transactional
 public class AppCommandsTest {
-    private static final  String TESTAUTHOR = "Author{id=100, firstName='Dan', lastName='Simmons'}";
+    private static final  String AUTHORSTRING = "Author{id=100, firstName='Dan', lastName='Simmons'}";
     private static final  String AUTHORSTRING1 = "Author{id=99, firstName='Fedor', lastName='Dostoevsky'}";
     private static final  String AUTHORSTRING2 = "Author{id=88, firstName='Viktor', lastName='Pelevin'}";
     private static final  String AUTHORSTRING3 =  "Author{id=77, firstName='Alexander', lastName='Filipenko'}";
@@ -54,7 +53,7 @@ public class AppCommandsTest {
 
     @Test
     public void create() {
-        assertEquals(TESTAUTHOR ,appCommands.create("author"));
+        assertEquals(AUTHORSTRING,appCommands.create("author"));
     }
 
     @Test

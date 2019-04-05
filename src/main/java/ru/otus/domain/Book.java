@@ -1,5 +1,8 @@
 package ru.otus.domain;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
@@ -9,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "book")
+@BatchSize(size=100)
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,9 +25,6 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "genre_id")
     private Genre genre;
-    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true,fetch = FetchType.EAGER)
-    private List<BookComment> comments=new ArrayList<>();
-
 
     public Book(String name,Author author, Genre genre) {
         this.name=name;
@@ -69,16 +70,11 @@ public class Book {
     public String toString() {
         String auth = author!=null ? author.getLastName():"";
         String gen = genre!=null? genre.getGenreName():"";
-        String  comm = comments!=null? comments.stream()
-                                               .map(BookComment::getComment)
-                                               .collect(Collectors.joining("; "))
-                                     :"";
         return "Book{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", author=" + auth +
                 ", genre=" + gen +
-                ", comments=" + comm+
                 '}';
     }
 

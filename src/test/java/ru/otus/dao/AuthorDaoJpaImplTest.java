@@ -1,37 +1,30 @@
 package ru.otus.dao;
 
-import org.h2.tools.Console;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.domain.Author;
-
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
+
 
 @RunWith(SpringRunner.class)
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
-//        , properties = {"spring.h2.console.enabled=true"})
-@DataJpaTest(properties = {"spring.h2.console.enabled=true"})
+@DataJpaTest
 @ComponentScan({"ru.otus.dao"})
-//@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
-@AutoConfigureTestDatabase(replace = NONE)
 @TestPropertySource("classpath:application-test.properties")
-public class AuthorDaoJDBCImplTest {
+public class AuthorDaoJpaImplTest {
 
-    private static final String NAME = "Fedor";
-    private static final String SURNAME = "Dostoevsky";
+    private static final String NAME1 = "Fedor";
+    private static final String SURNAME1 = "Dostoevsky";
     private static final String NAME2 = "Viktor";
     private static final String SURNAME2 = "Pelevin";
     private static final String NAME3 = "Alexander";
@@ -45,7 +38,7 @@ public class AuthorDaoJDBCImplTest {
 
     @Before
     public void setUp(){
-        author = new Author(NAME,SURNAME);
+        author = new Author(NAME1, SURNAME1);
 
     }
 
@@ -56,16 +49,13 @@ public class AuthorDaoJDBCImplTest {
 
     @Test
     public void findAllTest(){
-        Author[] authArr = {author,new Author(NAME2,SURNAME2),new Author(NAME3,SURNAME3)};
-        List<String> testAuthorsNames = Arrays.asList(authArr)
-                                         .stream()
-                                         .map(e->e.getFirstName())
-                                         .collect(Collectors.toList());
+        String [] testFirstNamesArr = {NAME1,NAME2,NAME3};
+        List<String> testFirstNamesList = Arrays.asList(testFirstNamesArr);
+
         List<String> dbAuthorsNames = authorDataJpa.findAll().stream()
                                          .map(e->e.getFirstName())
                                          .collect(Collectors.toList());
-        Assert.assertTrue(testAuthorsNames.containsAll(dbAuthorsNames)
-                          && dbAuthorsNames.containsAll(testAuthorsNames));
+        assertThat(testFirstNamesList).containsExactlyInAnyOrderElementsOf(dbAuthorsNames);
     }
 
     @Test
@@ -82,8 +72,8 @@ public class AuthorDaoJDBCImplTest {
     @Test
     public void findByIdTest(){
         Author result = authorDataJpa.findById(99);
-        Assert.assertTrue(result.getFirstName().equals(NAME));
-        Assert.assertTrue(result.getLastName().equals(SURNAME));
+        Assert.assertTrue(result.getFirstName().equals(NAME1));
+        Assert.assertTrue(result.getLastName().equals(SURNAME1));
     }
 
 
