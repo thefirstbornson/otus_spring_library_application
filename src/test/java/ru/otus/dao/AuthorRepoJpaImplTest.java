@@ -10,8 +10,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.otus.domain.Author;
+import ru.otus.exception.NoEntityException;
+import ru.otus.repository.AuthorRepository;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ComponentScan({"ru.otus.dao"})
 @TestPropertySource("classpath:application-test.properties")
-public class AuthorDaoJpaImplTest {
+public class AuthorRepoJpaImplTest {
 
     private static final String NAME1 = "Fedor";
     private static final String SURNAME1 = "Dostoevsky";
@@ -33,7 +37,7 @@ public class AuthorDaoJpaImplTest {
     private static final String SURNAME4 = "Akunin";
 
     @Autowired
-    AuthorDao authorDataJpa;
+    AuthorRepository authorDataJpa;
     Author author;
 
     @Before
@@ -44,7 +48,7 @@ public class AuthorDaoJpaImplTest {
 
     @Test
     public void getCountTest(){
-        Assert.assertEquals(3L,(long) authorDataJpa.getCount());
+        Assert.assertEquals(3L,(long) authorDataJpa.count());
     }
 
     @Test
@@ -53,7 +57,7 @@ public class AuthorDaoJpaImplTest {
         List<String> testFirstNamesList = Arrays.asList(testFirstNamesArr);
 
         List<String> dbAuthorsNames = authorDataJpa.findAll().stream()
-                                         .map(e->e.getFirstName())
+                                         .map(Author::getFirstName)
                                          .collect(Collectors.toList());
         assertThat(testFirstNamesList).containsExactlyInAnyOrderElementsOf(dbAuthorsNames);
     }
@@ -64,29 +68,29 @@ public class AuthorDaoJpaImplTest {
         Assert.assertTrue(author.getId()>0);
     }
 
-    @Test
-    public void notFoundByIdTest(){
-        Assert.assertNull(authorDataJpa.findById(author.getId()));
+    @Test(expected = NoEntityException.class)
+    public void notFoundByIdTest() throws NoEntityException {
+       authorDataJpa.findById(author.getId()).orElseThrow(NoEntityException::new);
     }
 
     @Test
     public void findByIdTest(){
-        Author result = authorDataJpa.findById(99);
-        Assert.assertTrue(result.getFirstName().equals(NAME1));
-        Assert.assertTrue(result.getLastName().equals(SURNAME1));
+        Optional<Author> result = authorDataJpa.findById(99L);
+        Assert.assertTrue(result.get().getFirstName().equals(NAME1));
+        Assert.assertTrue(result.get().getLastName().equals(SURNAME1));
     }
 
 
     @Test
     public void updateTest(){
-        author= authorDataJpa.findById(99);
+        author= authorDataJpa.findById(99L).get();
         author.setFirstName(NAME4);
         author.setLastName(SURNAME4);
-        authorDataJpa.update(author);
+        authorDataJpa.save(author);
         Assert.assertTrue( authorDataJpa.findById(author.getId())
-                .getFirstName().equals(NAME4));
+                .get().getFirstName().equals(NAME4));
         Assert.assertTrue( authorDataJpa.findById(author.getId())
-                .getLastName().equals(SURNAME4));
+                .get().getLastName().equals(SURNAME4));
     }
 
     @Test
@@ -94,6 +98,6 @@ public class AuthorDaoJpaImplTest {
         authorDataJpa.save(author);
         long id = author.getId();
         authorDataJpa.delete(author);
-        Assert.assertNull(authorDataJpa.findById(id));
+        Assert.assertTrue(!authorDataJpa.findById(id).isPresent());
     }
 }

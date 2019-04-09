@@ -2,11 +2,14 @@ package ru.otus.shell;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.otus.dao.GenericDao;
 import ru.otus.instance_service.CreateUpdateServise;
 import ru.otus.ioservice.IOService;
+
+import javax.validation.constraints.Null;
 
 @ShellComponent
 public class AppCommands {
@@ -23,23 +26,23 @@ public class AppCommands {
     @ShellMethod("create and save instance")
     public String create(String entityName){
         CreateUpdateServise cuService =shellInputMatcher.getServise(entityName);
-        GenericDao genericDao = shellInputMatcher.getDao(entityName);
-        return genericDao.save(cuService.create()).toString();
+        JpaRepository jpaRepository = shellInputMatcher.getDao(entityName);
+        return jpaRepository.save(cuService.create()).toString();
     }
 
     @ShellMethod("update instance")
     public String update(String entityName){
         CreateUpdateServise cuService =shellInputMatcher.getServise(entityName);
-        GenericDao genericDao = shellInputMatcher.getDao(entityName);
-        genericDao.update(cuService.update());
+        JpaRepository jpaRepository = shellInputMatcher.getDao(entityName);
+        jpaRepository.save(cuService.update());
         return "Instance updated.";
     }
 
     @ShellMethod("delete instance")
     public String delete(String entityName){
-        GenericDao genericDao = shellInputMatcher.getDao(entityName);
+        JpaRepository jpaRepository = shellInputMatcher.getDao(entityName);
         try {
-            genericDao.delete(genericDao.findById(Long.parseLong(ioService.userInput("Enter ID: "))));
+            jpaRepository.delete(jpaRepository.findById(Long.parseLong(ioService.userInput("Enter ID: "))));
             return "Instance deleted.";
         } catch (NumberFormatException e) {
             e.printStackTrace();
@@ -49,25 +52,28 @@ public class AppCommands {
 
     @ShellMethod("show instance")
     public String show(String entityName){
-        GenericDao genericDao = shellInputMatcher.getDao(entityName);
+        JpaRepository jpaRepository= shellInputMatcher.getDao(entityName);
         try {
-            return genericDao.findById(Long.parseLong(ioService.userInput("Enter ID: "))).toString();
+            return jpaRepository.findById(Long.parseLong(ioService.userInput("Enter ID: ")))
+                    .orElseThrow(NullPointerException::new).toString();
         }catch (NullPointerException e){
             ioService.showText(String.format("There is no %s with such ID"+"\n",entityName));
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
         }
         return null ;
     }
 
     @ShellMethod("show all instances")
     public String showAll(String entityName){
-        GenericDao genericDao = shellInputMatcher.getDao(entityName);
+        JpaRepository genericDao = shellInputMatcher.getDao(entityName);
         return genericDao.findAll().toString();
     }
 
     @ShellMethod("count total entities")
     public String count(String entityName){
-        GenericDao genericDao = shellInputMatcher.getDao(entityName);
-       return "Total count of '" + entityName +"' : " + genericDao.getCount();
+        JpaRepository jpaRepository= shellInputMatcher.getDao(entityName);
+       return "Total count of '" + entityName +"' : " + jpaRepository.count();
     }
 }
 

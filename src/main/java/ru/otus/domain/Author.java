@@ -17,9 +17,9 @@ public class Author {
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
-    @Fetch(FetchMode.SUBSELECT)
-    @OneToMany(mappedBy = "author", orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Book> books;
+//    @Fetch(FetchMode.SUBSELECT)
+//    @OneToMany(mappedBy = "author", orphanRemoval = true, fetch = FetchType.EAGER)
+//    private List<Book> books;
 
     public Author(long id, String firstName, String lastName) {
         this.id = id;

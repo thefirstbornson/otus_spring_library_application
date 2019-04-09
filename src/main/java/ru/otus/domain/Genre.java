@@ -15,9 +15,9 @@ public class Genre {
     private long id;
     @Column(name = "name")
     private String genreName;
-    @Fetch(FetchMode.SUBSELECT)
-    @OneToMany(mappedBy = "genre",orphanRemoval = true,fetch = FetchType.EAGER)
-    private List<Book> books;
+//    @Fetch(FetchMode.SUBSELECT)
+//    @OneToMany(mappedBy = "genre",orphanRemoval = true,fetch = FetchType.EAGER)
+//    private List<Book> books;
 
     public Genre(long id, String genreName) {
         this.id = id;

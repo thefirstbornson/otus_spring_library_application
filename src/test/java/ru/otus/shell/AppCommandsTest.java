@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.dao.AuthorDao;
 import ru.otus.domain.Author;
 import ru.otus.instance_service.AuthorCUService;
+import ru.otus.repository.AuthorRepository;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,7 +41,7 @@ public class AppCommandsTest {
     AuthorCUService authorCUService;
 
     @Autowired
-    AuthorDao authorDao;
+    AuthorRepository authorDao;
     @Autowired
     AppCommands appCommands;
 
