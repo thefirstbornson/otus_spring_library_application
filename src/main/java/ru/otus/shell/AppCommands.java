@@ -42,10 +42,13 @@ public class AppCommands {
     public String delete(String entityName){
         JpaRepository jpaRepository = shellInputMatcher.getDao(entityName);
         try {
-            jpaRepository.delete(jpaRepository.findById(Long.parseLong(ioService.userInput("Enter ID: "))));
+            jpaRepository.delete(jpaRepository.findById(Long.parseLong(ioService.userInput("Enter ID: ")))
+                    .orElseThrow(NullPointerException::new));
             return "Instance deleted.";
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+        } catch (NullPointerException e) {
+            ioService.showText(String.format("There is no %s with such ID"+"\n",entityName));
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
         }
         return "Instance deletion failed.";
     }
