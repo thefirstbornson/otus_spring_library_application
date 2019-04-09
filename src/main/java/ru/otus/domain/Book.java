@@ -1,9 +1,23 @@
 package ru.otus.domain;
 
+import org.hibernate.annotations.BatchSize;
+import javax.persistence.*;
+
+
+@Entity
+@Table(name = "book")
+@BatchSize(size=100)
 public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "name")
     private String name;
+    @ManyToOne
+    @JoinColumn(name="author_id")
     private Author author;
+    @ManyToOne
+    @JoinColumn(name = "genre_id")
     private Genre genre;
 
     public Book(String name,Author author, Genre genre) {
@@ -46,6 +60,18 @@ public class Book {
         this.genre = genre;
     }
 
+    @Override
+    public String toString() {
+        String auth = author!=null ? author.getLastName():"";
+        String gen = genre!=null? genre.getGenreName():"";
+        return "Book{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", author=" + auth +
+                ", genre=" + gen +
+                '}';
+    }
+
     public String getName() {
         return name;
     }
@@ -76,13 +102,4 @@ public class Book {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", author=" + author +
-                ", genre=" + genre +
-                '}';
-    }
 }

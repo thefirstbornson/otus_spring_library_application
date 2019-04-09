@@ -6,48 +6,38 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.shell.jline.InteractiveShellApplicationRunner;
-import org.springframework.shell.jline.ScriptShellApplicationRunner;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.domain.Author;
-import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
-
 @RunWith(SpringRunner.class)
-@JdbcTest
+@DataJpaTest
 @ComponentScan({"ru.otus.dao"})
-@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
-@TestPropertySource( "classpath:test-application.properties")
-public class GenreDaoJDBCImplTest {
+@TestPropertySource("classpath:application-test.properties")
+public class GenreDaoJpaImplTest {
     private static final String NAME = "Drama";
     private static final String NAME2 = "Sci-fi";
     private static final String NAME3 = "Historical Drama";
 
 
     @Autowired
-    GenreDao genreDaoJDBC;
+    GenreDao genreDaoJpa;
     Genre genre;
 
     @Before
     public void setUp(){
         genre = new Genre(NAME);
-
     }
 
     @Test
     public void getCountTest(){
-        Assert.assertEquals(3L,(long) genreDaoJDBC.getCount());
+        Assert.assertEquals(3L,(long) genreDaoJpa.getCount());
     }
 
     @Test
@@ -57,7 +47,7 @@ public class GenreDaoJDBCImplTest {
                 .stream()
                 .map(e->e.getGenreName())
                 .collect(Collectors.toList());
-        List<String> dbAuthorsNames = genreDaoJDBC.findAll().stream()
+        List<String> dbAuthorsNames = genreDaoJpa.findAll().stream()
                 .map(e->e.getGenreName())
                 .collect(Collectors.toList());
         Assert.assertTrue(testAuthorsNames.containsAll(dbAuthorsNames)
@@ -66,37 +56,38 @@ public class GenreDaoJDBCImplTest {
 
     @Test
     public void saveTest(){
-        genreDaoJDBC.save(genre);
+        genreDaoJpa.save(genre);
         Assert.assertTrue(genre.getId()>0);
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test
     public void notFoundByIdTest(){
-        Genre result = genreDaoJDBC.findById(genre.getId());
+        Assert.assertNull(genreDaoJpa.findById(genre.getId()));
     }
 
     @Test
     public void findByIdTest(){
-        Genre result = genreDaoJDBC.findById(99);
+        Genre result = genreDaoJpa.findById(99);
         Assert.assertTrue(result.getGenreName().equals(NAME));
     }
 
 
     @Test
     public void updateTest(){
-        genre=genreDaoJDBC.findById(99);
+        genre= genreDaoJpa.findById(99);
         genre.setGenreName(NAME2);
-        genreDaoJDBC.update(genre);
-        Assert.assertTrue( genreDaoJDBC.findById(genre.getId())
+        genreDaoJpa.update(genre);
+        Assert.assertTrue( genreDaoJpa.findById(genre.getId())
                 .getGenreName().equals(NAME2));
 
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test
     public void deleteTest(){
-        genreDaoJDBC.save(genre);
-        genreDaoJDBC.delete(genre);
-        genreDaoJDBC.findById(genre.getId());
+        genreDaoJpa.save(genre);
+        Long id = genre.getId();
+        genreDaoJpa.delete(genre);
+        Assert.assertNull(genreDaoJpa.findById(id));
     }
 
 }

@@ -6,66 +6,56 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.shell.jline.InteractiveShellApplicationRunner;
-import org.springframework.shell.jline.ScriptShellApplicationRunner;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.domain.Author;
 import ru.otus.domain.Book;
-import ru.otus.domain.Genre;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
-
 @RunWith(SpringRunner.class)
-@JdbcTest
+@DataJpaTest
 @ComponentScan({"ru.otus.dao"})
-@AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
-@TestPropertySource( "classpath:test-application.properties")
-public class BookDaoJDBCImplTest {
+@TestPropertySource("classpath:application-test.properties")
+public class BookDaoJpaImplTest {
     private static final String NAME = "Anna Karenina";
     private static final String NAME2 = "Snuff";
     private static final String NAME3 = "Red Cross";
     private static final String NAME4 = "Aristonomia";
 
     @Autowired
-    BookDao bookDaoJDBC;
+    BookDao bookDaoJpa;
     @Autowired
-    AuthorDao authorDaoJDBC;
+    AuthorDao authorDaoJpa;
     @Autowired
-    GenreDao genreDaoJDBC;
+    GenreDao genreDaoJpa;
     Book book;
 
     @Before
     public void setUp() throws Exception {
         book = new Book(NAME
-                , authorDaoJDBC.findById(99)
-                , genreDaoJDBC.findById(99)
+                , authorDaoJpa.findById(99)
+                , genreDaoJpa.findById(99)
         );
     }
 
     @Test
     public void getCountTest(){
-        Assert.assertEquals(3L,(long) bookDaoJDBC.getCount());
+        Assert.assertEquals(3L,(long) bookDaoJpa.getCount());
     }
 
     @Test
     public void findAllTest(){
-        Book[] bookArr = {book,new Book(NAME2,authorDaoJDBC.findById(88),genreDaoJDBC.findById(88))
-                ,new Book(NAME3,authorDaoJDBC.findById(77),genreDaoJDBC.findById(77))};
+        Book[] bookArr = {book,new Book(NAME2, authorDaoJpa.findById(88), genreDaoJpa.findById(88))
+                ,new Book(NAME3, authorDaoJpa.findById(77), genreDaoJpa.findById(77))};
         List<String> testBooksNames = Arrays.asList(bookArr)
                 .stream()
                 .map(e->e.getName())
                 .collect(Collectors.toList());
-        List<String> dbBookNames = bookDaoJDBC.findAll().stream()
+        List<String> dbBookNames = bookDaoJpa.findAll().stream()
                 .map(e->e.getName())
                 .collect(Collectors.toList());
         Assert.assertTrue(testBooksNames.containsAll(dbBookNames)
@@ -74,36 +64,38 @@ public class BookDaoJDBCImplTest {
 
     @Test
     public void saveTest(){
-        bookDaoJDBC.save(book);
+        bookDaoJpa.save(book);
         Assert.assertTrue(book.getId()>0);
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test
     public void notFoundByIdTest(){
-        Book result = bookDaoJDBC.findById(book.getId());
+        Assert.assertNull(bookDaoJpa.findById(book.getId()));
     }
 
     @Test
     public void findByIdTest(){
-        Book result = bookDaoJDBC.findById(99);
+        Book result = bookDaoJpa.findById(99);
         Assert.assertTrue(result.getName().equals(NAME));
     }
 
 
     @Test
     public void updateTest(){
-        book=bookDaoJDBC.findById(99);
+
+        book= bookDaoJpa.findById(99);
         book.setName(NAME4);
-        bookDaoJDBC.update(book);
-        Assert.assertTrue( bookDaoJDBC.findById(book.getId())
+        bookDaoJpa.update(book);
+        Assert.assertTrue( bookDaoJpa.findById(book.getId())
                 .getName().equals(NAME4));
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test
     public void deleteTest(){
-        bookDaoJDBC.save(book);
-        bookDaoJDBC.delete(book);
-        bookDaoJDBC.findById(book.getId());
+        bookDaoJpa.save(book);
+        Long id = book.getId();
+        bookDaoJpa.delete(book);
+        Assert.assertNull(bookDaoJpa.findById(id));
     }
 
 }
