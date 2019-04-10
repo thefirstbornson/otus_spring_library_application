@@ -12,11 +12,14 @@ import ru.otus.repository.GenreRepository;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 @Service
 public class ShellInputMatcherImpl implements ShellInputMatcher {
     private final Map<String,CreateUpdateServise> services = new HashMap<>();
     private final Map<String,JpaRepository> repostoryList = new HashMap<>();
+
 
     @Autowired
     public ShellInputMatcherImpl(AuthorCUService authorCUService, GenreCUService genreCUService
@@ -44,7 +47,7 @@ public class ShellInputMatcherImpl implements ShellInputMatcher {
     }
 
     @Override
-    public JpaRepository getDao(String instanceType) {
+    public JpaRepository getRepository(String instanceType) {
         JpaRepository dao = repostoryList.get(instanceType);
 
         if (dao == null) {
@@ -53,5 +56,6 @@ public class ShellInputMatcherImpl implements ShellInputMatcher {
         }
         return dao;
     }
+
 }
 

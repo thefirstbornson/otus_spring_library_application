@@ -34,6 +34,5 @@ public class BookCommentCUServiceImpl implements BookCommentCUService {
         BookComment bookComment = bookCommentDao.findById(Long.parseLong(ioservice.userInput("Enter comment ID: ")));
         bookComment.setComment(ioservice.userInput(String.format("Change your comment to %s: ", book.getName())));
         return bookComment;
-
     }
 }

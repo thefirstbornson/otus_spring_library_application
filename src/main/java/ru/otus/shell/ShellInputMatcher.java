@@ -6,5 +6,5 @@ import ru.otus.instance_service.CreateUpdateServise;
 
 public interface ShellInputMatcher {
     CreateUpdateServise getServise(String instanceType);
-    JpaRepository getDao(String instanceType);
+    JpaRepository getRepository(String instanceType);
 }

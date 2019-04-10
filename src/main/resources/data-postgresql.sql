@@ -1,5 +1,5 @@
 insert into author (FIRST_NAME, LAST_NAME) values ('Leo','Tolstoy');
-insert into author (FIRST_NAME, LAST_NAME) values ('Leo','Tolstoy');
+insert into author (FIRST_NAME, LAST_NAME) values ('Fedor','Dostoevsky');
 
 insert into genre (NAME) values ('Historical drama');
 insert into genre (NAME) values ('Drama');

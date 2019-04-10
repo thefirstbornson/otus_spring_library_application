@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,7 +12,6 @@ import org.springframework.shell.jline.ScriptShellApplicationRunner;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.dao.AuthorDao;
 import ru.otus.domain.Author;
 import ru.otus.instance_service.AuthorCUService;
 import ru.otus.repository.AuthorRepository;
@@ -47,7 +45,7 @@ public class AppCommandsTest {
 
     @Before
     public void setUp(){
-        given(shellInputMatcher.getDao(any())).willReturn(authorDao);
+        given(shellInputMatcher.getRepository(any())).willReturn(authorDao);
         given(shellInputMatcher.getServise(any())).willReturn(authorCUService);
         given(authorCUService.create()).willReturn(new Author("Dan","Simmons"));
     }
@@ -59,7 +57,7 @@ public class AppCommandsTest {
 
     @Test
     public void showAll() {
-        String commandResult = appCommands.showAll("author");
+        String commandResult = appCommands.showAll("author","");
         assertTrue(commandResult.contains(AUTHORSTRING1)
                 && commandResult.contains(AUTHORSTRING2)
                 && commandResult.contains(AUTHORSTRING3));
