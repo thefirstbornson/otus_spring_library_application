@@ -2,22 +2,23 @@ package ru.otus.instance_service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.otus.dao.AuthorDao;
-import ru.otus.dao.GenreDao;
+
 import ru.otus.domain.Book;
 import ru.otus.ioservice.IOService;
+import ru.otus.repository.AuthorRepository;
+import ru.otus.repository.GenreRepository;
 
 @Service
 public class BookCUServiceImpl implements BookCUService {
     private final IOService ioservice;
-    private final AuthorDao authorDao;
-    private final GenreDao genreDao;
+    private final AuthorRepository authorRepository;
+    private final GenreRepository genreRepository;
 
     @Autowired
-    public BookCUServiceImpl(IOService ioservice, AuthorDao authorDao, GenreDao genreDao) {
+    public BookCUServiceImpl(IOService ioservice, AuthorRepository authorRepository, GenreRepository genreRepository) {
         this.ioservice = ioservice;
-        this.authorDao = authorDao;
-        this.genreDao = genreDao;
+        this.authorRepository = authorRepository;
+        this.genreRepository = genreRepository;
     }
 
 
@@ -25,8 +26,8 @@ public class BookCUServiceImpl implements BookCUService {
     public Book create() {
         return new Book(
                 ioservice.userInput("Enter title of the book: ")
-                ,authorDao.findById(Long.parseLong(ioservice.userInput("Enter author's ID: ")))
-                ,genreDao.findById(Long.parseLong(ioservice.userInput("Enter genre's ID: ")))
+                , authorRepository.findById(Long.parseLong(ioservice.userInput("Enter author's ID: "))).get()
+                , genreRepository.findById(Long.parseLong(ioservice.userInput("Enter genre's ID: "))).get()
         );
     }
 
@@ -35,8 +36,8 @@ public class BookCUServiceImpl implements BookCUService {
         return new Book(
                 Long.parseLong(ioservice.userInput("Enter ID:"))
                 ,ioservice.userInput("Enter title of the book: ")
-                ,authorDao.findById(Long.parseLong(ioservice.userInput("Enter author's ID: ")))
-                ,genreDao.findById(Long.parseLong(ioservice.userInput("Enter genre's ID: ")))
+                , authorRepository.findById(Long.parseLong(ioservice.userInput("Enter author's ID: "))).get()
+                , genreRepository.findById(Long.parseLong(ioservice.userInput("Enter genre's ID: "))).get()
         );
     }
 }

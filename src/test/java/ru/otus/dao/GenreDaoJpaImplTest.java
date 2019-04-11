@@ -74,14 +74,14 @@ public class GenreDaoJpaImplTest {
 
     @Test
     public void findByIdTest(){
-        Genre result = genreRepository.findById(99L).get();
+        Genre result = genreRepository.findById(999L).get();
         assertEquals(NAME,result.getGenreName());
     }
 
 
     @Test
     public void updateTest(){
-        genre= genreRepository.findById(99L).get();
+        genre= genreRepository.findById(999L).get();
         genre.setGenreName(NAME2);
         genreRepository.save(genre);
         assertEquals(NAME2, genreRepository.findById(genre.getId()).get().getGenreName());

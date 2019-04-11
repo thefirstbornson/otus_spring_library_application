@@ -1,27 +1,28 @@
 package ru.otus.instance_service;
 
 import org.springframework.stereotype.Service;
-import ru.otus.dao.BookCommentDao;
-import ru.otus.dao.BookDao;
 import ru.otus.domain.Book;
 import ru.otus.domain.BookComment;
 import ru.otus.ioservice.IOService;
+import ru.otus.repository.BookCommentRepository;
+import ru.otus.repository.BookRepository;
 
 @Service
 public class BookCommentCUServiceImpl implements BookCommentCUService {
     private final IOService ioservice;
-    private final BookDao bookDao;
-    private final BookCommentDao bookCommentDao;
+    private final BookRepository bookRepository;
+    private final BookCommentRepository bookCommentRepository;
 
-    public BookCommentCUServiceImpl(IOService ioservice, BookDao bookDao, BookCommentDao bookCommentDao) {
+    public BookCommentCUServiceImpl(IOService ioservice, BookRepository bookRepository
+            , BookCommentRepository bookCommentRepository) {
         this.ioservice = ioservice;
-        this.bookDao = bookDao;
-        this.bookCommentDao = bookCommentDao;
+        this.bookRepository = bookRepository;
+        this.bookCommentRepository = bookCommentRepository;
     }
 
     @Override
     public BookComment create() {
-        Book book = bookDao.findById(Long.parseLong(ioservice.userInput("Enter Book ID: ")));
+        Book book = bookRepository.findById(Long.parseLong(ioservice.userInput("Enter Book ID: "))).get();
         return new BookComment(
                 ioservice.userInput(String.format("Leave your comment to %s: ", book.getName()))
                 ,book
@@ -30,8 +31,8 @@ public class BookCommentCUServiceImpl implements BookCommentCUService {
 
     @Override
     public BookComment update() {
-        Book book = bookDao.findById(Long.parseLong(ioservice.userInput("Enter Book ID: ")));
-        BookComment bookComment = bookCommentDao.findById(Long.parseLong(ioservice.userInput("Enter comment ID: ")));
+        Book book = bookRepository.findById(Long.parseLong(ioservice.userInput("Enter Book ID: "))).get();
+        BookComment bookComment = bookCommentRepository.findById(Long.parseLong(ioservice.userInput("Enter comment ID: "))).get();
         bookComment.setComment(ioservice.userInput(String.format("Change your comment to %s: ", book.getName())));
         return bookComment;
     }

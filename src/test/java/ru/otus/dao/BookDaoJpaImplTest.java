@@ -47,7 +47,7 @@ public class BookDaoJpaImplTest {
     public void setUp() throws Exception {
         book = new Book(NAME
                 , authorRepository.findById(99L).get()
-                , genreRepository.findById(99L).get()
+                , genreRepository.findById(999L).get()
         );
     }
 
@@ -58,8 +58,8 @@ public class BookDaoJpaImplTest {
 
     @Test
     public void findAllTest(){
-        Book[] bookArr = {book,new Book(NAME2, authorRepository.findById(88L).get(), genreRepository.findById(88L).get())
-                ,new Book(NAME3, authorRepository.findById(77L).get(), genreRepository.findById(77L).get())};
+        Book[] bookArr = {book,new Book(NAME2, authorRepository.findById(88L).get(), genreRepository.findById(888L).get())
+                ,new Book(NAME3, authorRepository.findById(77L).get(), genreRepository.findById(777L).get())};
         List<String> testBooksNames = Arrays.asList(bookArr)
                 .stream()
                 .map(e->e.getName())
@@ -85,7 +85,7 @@ public class BookDaoJpaImplTest {
 
     @Test
     public void findByIdTest(){
-        Book result = bookRepository.findById(99L).get();
+        Book result = bookRepository.findById(9L).get();
         assertEquals(NAME,result.getName());
     }
 
@@ -93,7 +93,7 @@ public class BookDaoJpaImplTest {
     @Test
     public void updateTest(){
 
-        book= bookRepository.findById(99L).get();
+        book= bookRepository.findById(9L).get();
         book.setName(NAME4);
         bookRepository.save(book);
         assertEquals(NAME4, bookRepository.findById(book.getId()).get().getName());
