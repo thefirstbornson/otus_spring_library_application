@@ -1,22 +1,28 @@
 package ru.otus.dao;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.domain.Genre;
+import ru.otus.repository.GenreRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-@RunWith(SpringRunner.class)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ComponentScan({"ru.otus.dao"})
 @TestPropertySource("classpath:application-test.properties")
@@ -27,17 +33,17 @@ public class GenreDaoJpaImplTest {
 
 
     @Autowired
-    GenreDao genreDaoJpa;
+    GenreRepository genreRepository;
     Genre genre;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         genre = new Genre(NAME);
     }
 
     @Test
     public void getCountTest(){
-        Assert.assertEquals(3L,(long) genreDaoJpa.getCount());
+        assertEquals(3L,(long) genreRepository.count());
     }
 
     @Test
@@ -47,47 +53,46 @@ public class GenreDaoJpaImplTest {
                 .stream()
                 .map(e->e.getGenreName())
                 .collect(Collectors.toList());
-        List<String> dbAuthorsNames = genreDaoJpa.findAll().stream()
+        List<String> dbAuthorsNames = genreRepository.findAll().stream()
                 .map(e->e.getGenreName())
                 .collect(Collectors.toList());
-        Assert.assertTrue(testAuthorsNames.containsAll(dbAuthorsNames)
-                && dbAuthorsNames.containsAll(testAuthorsNames));
+        assertThat(testAuthorsNames).containsExactlyInAnyOrderElementsOf(dbAuthorsNames);
     }
 
     @Test
     public void saveTest(){
-        genreDaoJpa.save(genre);
-        Assert.assertTrue(genre.getId()>0);
+        genreRepository.save(genre);
+        assertTrue(genre.getId()>0);
     }
 
     @Test
-    public void notFoundByIdTest(){
-        Assert.assertNull(genreDaoJpa.findById(genre.getId()));
+    public void shouldRaiseAnNoSuchElementException() throws NoSuchElementException {
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            genreRepository.findById(genre.getId()).get();
+        });
     }
 
     @Test
     public void findByIdTest(){
-        Genre result = genreDaoJpa.findById(99);
-        Assert.assertTrue(result.getGenreName().equals(NAME));
+        Genre result = genreRepository.findById(99L).get();
+        assertEquals(NAME,result.getGenreName());
     }
 
 
     @Test
     public void updateTest(){
-        genre= genreDaoJpa.findById(99);
+        genre= genreRepository.findById(99L).get();
         genre.setGenreName(NAME2);
-        genreDaoJpa.update(genre);
-        Assert.assertTrue( genreDaoJpa.findById(genre.getId())
-                .getGenreName().equals(NAME2));
-
+        genreRepository.save(genre);
+        assertEquals(NAME2, genreRepository.findById(genre.getId()).get().getGenreName());
     }
 
     @Test
     public void deleteTest(){
-        genreDaoJpa.save(genre);
+        genreRepository.save(genre);
         Long id = genre.getId();
-        genreDaoJpa.delete(genre);
-        Assert.assertNull(genreDaoJpa.findById(id));
+        genreRepository.delete(genre);
+        assertTrue(!genreRepository.findById(id).isPresent());
     }
 
 }

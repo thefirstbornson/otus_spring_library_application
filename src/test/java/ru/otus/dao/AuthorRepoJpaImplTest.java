@@ -1,27 +1,31 @@
 package ru.otus.dao;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import ru.otus.domain.Author;
 import ru.otus.exception.NoEntityException;
 import ru.otus.repository.AuthorRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ComponentScan({"ru.otus.dao"})
 @TestPropertySource("classpath:application-test.properties")
@@ -40,7 +44,7 @@ public class AuthorRepoJpaImplTest {
     AuthorRepository authorDataJpa;
     Author author;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         author = new Author(NAME1, SURNAME1);
 
@@ -48,7 +52,7 @@ public class AuthorRepoJpaImplTest {
 
     @Test
     public void getCountTest(){
-        Assert.assertEquals(3L,(long) authorDataJpa.count());
+        assertEquals(3L,(long) authorDataJpa.count());
     }
 
     @Test
@@ -59,25 +63,29 @@ public class AuthorRepoJpaImplTest {
         List<String> dbAuthorsNames = authorDataJpa.findAll().stream()
                                          .map(Author::getFirstName)
                                          .collect(Collectors.toList());
+
         assertThat(testFirstNamesList).containsExactlyInAnyOrderElementsOf(dbAuthorsNames);
     }
 
     @Test
     public void saveTest(){
         authorDataJpa.save(author);
-        Assert.assertTrue(author.getId()>0);
+        assertTrue(author.getId()>0);
     }
 
-    @Test(expected = NoEntityException.class)
-    public void notFoundByIdTest() throws NoEntityException {
-       authorDataJpa.findById(author.getId()).orElseThrow(NoEntityException::new);
+    @Test
+    public void shouldRaiseAnNoSuchElementException() throws NoSuchElementException {
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            authorDataJpa.findById(author.getId()).get();
+        });
+
     }
 
     @Test
     public void findByIdTest(){
         Optional<Author> result = authorDataJpa.findById(99L);
-        Assert.assertTrue(result.get().getFirstName().equals(NAME1));
-        Assert.assertTrue(result.get().getLastName().equals(SURNAME1));
+        assertEquals(NAME1,result.get().getFirstName());
+        assertEquals(SURNAME1,result.get().getLastName());
     }
 
 
@@ -87,10 +95,8 @@ public class AuthorRepoJpaImplTest {
         author.setFirstName(NAME4);
         author.setLastName(SURNAME4);
         authorDataJpa.save(author);
-        Assert.assertTrue( authorDataJpa.findById(author.getId())
-                .get().getFirstName().equals(NAME4));
-        Assert.assertTrue( authorDataJpa.findById(author.getId())
-                .get().getLastName().equals(SURNAME4));
+        assertEquals(NAME4,authorDataJpa.findById(author.getId()).get().getFirstName());
+        assertEquals(SURNAME4,authorDataJpa.findById(author.getId()).get().getLastName());
     }
 
     @Test
@@ -98,6 +104,6 @@ public class AuthorRepoJpaImplTest {
         authorDataJpa.save(author);
         long id = author.getId();
         authorDataJpa.delete(author);
-        Assert.assertTrue(!authorDataJpa.findById(id).isPresent());
+       assertTrue(!authorDataJpa.findById(id).isPresent());
     }
 }

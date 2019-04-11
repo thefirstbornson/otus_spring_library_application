@@ -1,22 +1,31 @@
 package ru.otus.dao;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import ru.otus.domain.Book;
+import ru.otus.repository.AuthorRepository;
+import ru.otus.repository.BookRepository;
+import ru.otus.repository.GenreRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-@RunWith(SpringRunner.class)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ComponentScan({"ru.otus.dao"})
 @TestPropertySource("classpath:application-test.properties")
@@ -27,75 +36,75 @@ public class BookDaoJpaImplTest {
     private static final String NAME4 = "Aristonomia";
 
     @Autowired
-    BookDao bookDaoJpa;
+    BookRepository bookRepository;
     @Autowired
-    AuthorDao authorDaoJpa;
+    AuthorRepository authorRepository;
     @Autowired
-    GenreDao genreDaoJpa;
+    GenreRepository genreRepository;
     Book book;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         book = new Book(NAME
-                , authorDaoJpa.findById(99)
-                , genreDaoJpa.findById(99)
+                , authorRepository.findById(99L).get()
+                , genreRepository.findById(99L).get()
         );
     }
 
     @Test
     public void getCountTest(){
-        Assert.assertEquals(3L,(long) bookDaoJpa.getCount());
+        assertEquals(3L,(long) bookRepository.count());
     }
 
     @Test
     public void findAllTest(){
-        Book[] bookArr = {book,new Book(NAME2, authorDaoJpa.findById(88), genreDaoJpa.findById(88))
-                ,new Book(NAME3, authorDaoJpa.findById(77), genreDaoJpa.findById(77))};
+        Book[] bookArr = {book,new Book(NAME2, authorRepository.findById(88L).get(), genreRepository.findById(88L).get())
+                ,new Book(NAME3, authorRepository.findById(77L).get(), genreRepository.findById(77L).get())};
         List<String> testBooksNames = Arrays.asList(bookArr)
                 .stream()
                 .map(e->e.getName())
                 .collect(Collectors.toList());
-        List<String> dbBookNames = bookDaoJpa.findAll().stream()
+        List<String> dbBookNames = bookRepository.findAll().stream()
                 .map(e->e.getName())
                 .collect(Collectors.toList());
-        Assert.assertTrue(testBooksNames.containsAll(dbBookNames)
-                && dbBookNames.containsAll(testBooksNames));
+        assertThat(testBooksNames).containsExactlyInAnyOrderElementsOf(dbBookNames);
     }
 
     @Test
     public void saveTest(){
-        bookDaoJpa.save(book);
-        Assert.assertTrue(book.getId()>0);
+        bookRepository.save(book);
+        assertTrue(book.getId()>0);
     }
 
     @Test
-    public void notFoundByIdTest(){
-        Assert.assertNull(bookDaoJpa.findById(book.getId()));
+    public void shouldRaiseAnNoSuchElementException() throws NoSuchElementException {
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            bookRepository.findById(book.getId()).get();
+        });
     }
 
     @Test
     public void findByIdTest(){
-        Book result = bookDaoJpa.findById(99);
-        Assert.assertTrue(result.getName().equals(NAME));
+        Book result = bookRepository.findById(99L).get();
+        assertEquals(NAME,result.getName());
     }
 
 
     @Test
     public void updateTest(){
 
-        book= bookDaoJpa.findById(99);
+        book= bookRepository.findById(99L).get();
         book.setName(NAME4);
-        bookDaoJpa.update(book);
-        Assert.assertTrue( bookDaoJpa.findById(book.getId())
-                .getName().equals(NAME4));
+        bookRepository.save(book);
+        assertEquals(NAME4, bookRepository.findById(book.getId()).get().getName());
     }
 
     @Test
     public void deleteTest(){
-        bookDaoJpa.save(book);
+        bookRepository.save(book);
         Long id = book.getId();
-        bookDaoJpa.delete(book);
-        Assert.assertNull(bookDaoJpa.findById(id));
+        bookRepository.delete(book);
+        assertTrue(!bookRepository.findById(id).isPresent());
     }
 
 }

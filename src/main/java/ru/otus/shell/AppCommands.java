@@ -101,6 +101,7 @@ public class AppCommands {
                 return (List) findByOptionMethod.get(0).invoke(entityRepo
                         , optionRepo.findById(Long.parseLong(ioService.userInput(String.format("Enter %s's ID: ", option))))
                                 .orElseThrow(NoEntityException::new));
+
             } catch (NullPointerException | NumberFormatException | NoEntityException e) {
                 ioService.showText(String.format("There is no %s with such ID" + "\n", option));
             } catch (Throwable throwable) {
