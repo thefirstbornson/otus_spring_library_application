@@ -1,9 +1,11 @@
 insert into author (ID,FIRST_NAME, LAST_NAME) values (99,'Fedor','Dostoevsky');
-insert into genre (ID,NAME) values (99,'Drama');
-insert into book (ID,NAME, AUTHOR_ID, GENRE_ID ) values (99,'Anna Karenina',99,99);
 insert into author (ID,FIRST_NAME, LAST_NAME) values (88,'Viktor','Pelevin');
-insert into genre (ID,NAME) values (88,'Sci-fi');
-insert into book (ID,NAME, AUTHOR_ID, GENRE_ID ) values (88,'Snuff',88,88);
 insert into author (ID,FIRST_NAME, LAST_NAME) values (77,'Alexander','Filipenko');
-insert into genre (ID,NAME) values (77,'Historical Drama');
-insert into book (ID,NAME, AUTHOR_ID, GENRE_ID ) values (77,'Red Cross',77,77);
+
+insert into genre (ID,NAME) values (999,'Drama');
+insert into genre (ID,NAME) values (888,'Sci-fi');
+insert into genre (ID,NAME) values (777,'Historical Drama');
+
+insert into book (ID,NAME, AUTHOR_ID, GENRE_ID ) values (9,'Anna Karenina',99,999);
+insert into book (ID,NAME, AUTHOR_ID, GENRE_ID ) values (8,'Snuff',88,888);
+insert into book (ID,NAME, AUTHOR_ID, GENRE_ID ) values (7,'Red Cross',77,777);

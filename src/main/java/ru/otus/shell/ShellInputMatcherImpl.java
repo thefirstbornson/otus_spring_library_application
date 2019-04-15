@@ -1,30 +1,37 @@
 package ru.otus.shell;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import ru.otus.dao.*;
 import ru.otus.instance_service.*;
+import ru.otus.repository.AuthorRepository;
+import ru.otus.repository.BookCommentRepository;
+import ru.otus.repository.BookRepository;
+import ru.otus.repository.GenreRepository;
 
 import java.util.HashMap;
 import java.util.Map;
 
+
 @Service
 public class ShellInputMatcherImpl implements ShellInputMatcher {
     private final Map<String,CreateUpdateServise> services = new HashMap<>();
-    private final Map<String,GenericDao> daoList = new HashMap<>();
+    private final Map<String,JpaRepository> repostoryList = new HashMap<>();
+
 
     @Autowired
     public ShellInputMatcherImpl(AuthorCUService authorCUService, GenreCUService genreCUService
-            , BookCUService bookCUService, BookCommentCUService bookCommentCUService, AuthorDao authorDao
-            , GenreDao genreDao, BookDao bookDao, BookCommentDao bookCommentDao) {
+            , BookCUService bookCUService, BookCommentCUService bookCommentCUService
+            , AuthorRepository authorRepository, GenreRepository genreRepository
+            , BookRepository bookRepository, BookCommentRepository bookCommentRepository) {
         services.put("author",authorCUService);
         services.put("genre",genreCUService);
         services.put("book",bookCUService);
         services.put("bookcomment",bookCommentCUService);
-        daoList.put("author",authorDao);
-        daoList.put("genre", genreDao);
-        daoList.put("book", bookDao);
-        daoList.put("bookcomment", bookCommentDao);
+        repostoryList.put("author",authorRepository);
+        repostoryList.put("genre", genreRepository);
+        repostoryList.put("book", bookRepository);
+        repostoryList.put("bookcomment", bookCommentRepository);
     }
 
     public CreateUpdateServise getServise(String instanceType) {
@@ -38,8 +45,8 @@ public class ShellInputMatcherImpl implements ShellInputMatcher {
     }
 
     @Override
-    public GenericDao getDao(String instanceType) {
-        GenericDao dao = daoList.get(instanceType);
+    public JpaRepository getRepository(String instanceType) {
+        JpaRepository dao = repostoryList.get(instanceType);
 
         if (dao == null) {
             throw new IllegalArgumentException("Invalid instance type: "
@@ -47,5 +54,6 @@ public class ShellInputMatcherImpl implements ShellInputMatcher {
         }
         return dao;
     }
+
 }
 
