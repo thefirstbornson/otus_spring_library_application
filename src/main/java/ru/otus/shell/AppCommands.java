@@ -11,6 +11,9 @@ import ru.otus.domain.Author;
 import ru.otus.exception.NoEntityException;
 import ru.otus.instance_service.CreateUpdateServise;
 import ru.otus.ioservice.IOService;
+import ru.otus.repository.AuthorRepository;
+import ru.otus.repository.BookRepository;
+import ru.otus.repository.GenreRepository;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -77,10 +80,6 @@ public class AppCommands {
     @ShellMethod("show all instances")
     public String showAll(String entityName, @ShellOption(defaultValue = "") String option) {
         JpaRepository entityRepository = shellInputMatcher.getRepository(entityName);
-        if (!option.equals("")) {
-            List result = showWithOption(entityRepository, option);
-            return result != null ? result.toString() : "";
-        }
         return entityRepository.findAll().toString();
     }
 
@@ -90,27 +89,33 @@ public class AppCommands {
         return "Total count of '" + entityName + "' : " + jpaRepository.count();
     }
 
-    private List showWithOption(JpaRepository entityRepo, String option) {
-        List<Method> findByOptionMethod  = Arrays.stream(entityRepo.getClass().getDeclaredMethods())
-                    .filter(method -> method.getName().toLowerCase().contains(option.toLowerCase()))
-                    .collect(Collectors.toList());
 
-        if (findByOptionMethod.size() > 0) {
-            JpaRepository optionRepo = shellInputMatcher.getRepository(option);
-            try {
-                return (List) findByOptionMethod.get(0).invoke(entityRepo
-                        , optionRepo.findById(Long.parseLong(ioService.userInput(String.format("Enter %s's ID: ", option))))
-                                .orElseThrow(NoEntityException::new));
 
-            } catch (NullPointerException | NumberFormatException | NoEntityException e) {
-                ioService.showText(String.format("There is no %s with such ID" + "\n", option));
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }else{
-            ioService.showText(String.format("There is no such option for this entity: -%s", option));
-        }
-        return null;
+    @ShellMethod(value = "This command returns list of books by given author",
+            group = "Reports")
+    public String getBooksByAuthor(){
+        BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
+        AuthorRepository authorRepo = (AuthorRepository) shellInputMatcher.getRepository("author");
+        return bookRepo.findBooksByAuthor(
+                authorRepo.findById(Long.parseLong(ioService.userInput("Enter author's ID: "))).get()).toString();
+
     }
+
+    @ShellMethod(value = "This command returns list of books by given genre",
+            group = "Reports")
+    public String getBooksByGenre(){
+        BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
+        GenreRepository genreRepo = (GenreRepository) shellInputMatcher.getRepository("genre");
+        return bookRepo.findBooksByGenre(
+                genreRepo.findById(Long.parseLong(ioService.userInput("Enter genre's ID: "))).get()).toString();
+    }
+
+    @ShellMethod(value = "This command returns list of author by given genre name",
+            group = "Reports")
+    public String getAuthorsByGenreName(){
+        BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
+        return bookRepo.findAuthorByGenreGenreName(ioService.userInput("Enter genre's name: ")).toString();
+    }
+
 }
 

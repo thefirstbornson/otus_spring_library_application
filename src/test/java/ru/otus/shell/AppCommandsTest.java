@@ -18,6 +18,7 @@ import ru.otus.instance_service.AuthorCUService;
 import ru.otus.ioservice.IOService;
 import ru.otus.repository.AuthorRepository;
 import ru.otus.repository.BookRepository;
+import ru.otus.repository.GenreRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,6 +50,10 @@ public class AppCommandsTest {
 
     @Autowired
     AuthorRepository authorRepository;
+
+    @Autowired
+    GenreRepository genreRepository;
+
     @Autowired
     BookRepository bookRepository;
 
@@ -59,6 +64,7 @@ public class AppCommandsTest {
     public void setUp(){
         given(shellInputMatcher.getRepository("book")).willReturn(bookRepository);
         given(shellInputMatcher.getRepository("author")).willReturn(authorRepository);
+        given(shellInputMatcher.getRepository("genre")).willReturn(genreRepository);
         given(shellInputMatcher.getServise(any())).willReturn(authorCUService);
         given(authorCUService.create()).willReturn(new Author("Dan","Simmons"));
     }
@@ -78,12 +84,25 @@ public class AppCommandsTest {
     }
 
     @Test
-    public void showAllWithOption() {
+    public void getBooksByAuthor() {
         given(ioService.userInput(any())).willReturn("77");
-        String commandResult = appCommands.showAll("book","author");
+        String commandResult = appCommands.getBooksByAuthor();
         assertEquals(BOOKLISTSTRING,commandResult);
     }
 
+    @Test
+    public void getBooksByGenre() {
+        given(ioService.userInput(any())).willReturn("777");
+        String commandResult = appCommands.getBooksByGenre();
+        assertEquals(BOOKLISTSTRING,commandResult);
+    }
+
+    @Test
+    public void getAuthorsByGenreName() {
+        given(ioService.userInput(any())).willReturn("Historical Drama");
+        String commandResult = appCommands.getAuthorsByGenreName();
+        assertEquals("["+AUTHORSTRING3+"]",commandResult);
+    }
     @Test
     public void count() {
         assertEquals("Total count of 'author' : 3",appCommands.count("author"));

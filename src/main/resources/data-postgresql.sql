@@ -1,8 +1,8 @@
 insert into author (FIRST_NAME, LAST_NAME) values ('Leo','Tolstoy');
 insert into author (FIRST_NAME, LAST_NAME) values ('Fedor','Dostoevsky');
 
-insert into genre (NAME) values ('Historical drama');
-insert into genre (NAME) values ('Drama');
+insert into genre (NAME) values ('historical drama');
+insert into genre (NAME) values ('drama');
 
 insert into book (NAME, AUTHOR_ID, GENRE_ID ) values ('War & Peace',1,1);
 insert into book (NAME, AUTHOR_ID, GENRE_ID ) values ('Anna Karenina',1,2);

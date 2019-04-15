@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "book")
-@BatchSize(size=100)
+@NamedEntityGraph(name = "bookGraph", includeAllAttributes = true)
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
