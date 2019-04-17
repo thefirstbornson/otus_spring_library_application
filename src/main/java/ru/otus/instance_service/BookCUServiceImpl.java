@@ -26,18 +26,18 @@ public class BookCUServiceImpl implements BookCUService {
     public Book create() {
         return new Book(
                 ioservice.userInput("Enter title of the book: ")
-                , authorRepository.findById(Long.parseLong(ioservice.userInput("Enter author's ID: "))).get()
-                , genreRepository.findById(Long.parseLong(ioservice.userInput("Enter genre's ID: "))).get()
+                , authorRepository.findById(ioservice.userInput("Enter author's ID: ")).get()
+                , genreRepository.findById(ioservice.userInput("Enter genre's ID: ")).get()
         );
     }
 
     @Override
     public Book update() {
         return new Book(
-                Long.parseLong(ioservice.userInput("Enter ID:"))
+                ioservice.userInput("Enter ID:")
                 ,ioservice.userInput("Enter title of the book: ")
-                , authorRepository.findById(Long.parseLong(ioservice.userInput("Enter author's ID: "))).get()
-                , genreRepository.findById(Long.parseLong(ioservice.userInput("Enter genre's ID: "))).get()
+                , authorRepository.findById(ioservice.userInput("Enter author's ID: ")).get()
+                , genreRepository.findById(ioservice.userInput("Enter genre's ID: ")).get()
         );
     }
 }

@@ -62,7 +62,7 @@ public class GenreDaoJpaImplTest {
     @Test
     public void saveTest(){
         genreRepository.save(genre);
-        assertTrue(genre.getId()>0);
+        assertTrue(genre.getId()!=null);
     }
 
     @Test
@@ -74,14 +74,14 @@ public class GenreDaoJpaImplTest {
 
     @Test
     public void findByIdTest(){
-        Genre result = genreRepository.findById(999L).get();
+        Genre result = genreRepository.findById("999").get();
         assertEquals(NAME,result.getGenreName());
     }
 
 
     @Test
     public void updateTest(){
-        genre= genreRepository.findById(999L).get();
+        genre= genreRepository.findById("999").get();
         genre.setGenreName(NAME2);
         genreRepository.save(genre);
         assertEquals(NAME2, genreRepository.findById(genre.getId()).get().getGenreName());
@@ -90,7 +90,7 @@ public class GenreDaoJpaImplTest {
     @Test
     public void deleteTest(){
         genreRepository.save(genre);
-        Long id = genre.getId();
+        String id = genre.getId();
         genreRepository.delete(genre);
         assertTrue(!genreRepository.findById(id).isPresent());
     }

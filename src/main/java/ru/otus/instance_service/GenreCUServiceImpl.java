@@ -2,7 +2,6 @@ package ru.otus.instance_service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.otus.domain.Author;
 import ru.otus.domain.Genre;
 import ru.otus.ioservice.IOService;
 
@@ -22,7 +21,7 @@ public class GenreCUServiceImpl implements GenreCUService {
     @Override
     public Genre update() {
         return new Genre(
-                Long.parseLong(ioservice.userInput("Enter ID:"))
+                ioservice.userInput("Enter ID:")
                 ,ioservice.userInput("Enter genre name: ")
         );
     }

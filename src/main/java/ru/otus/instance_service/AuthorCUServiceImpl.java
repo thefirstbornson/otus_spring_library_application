@@ -25,7 +25,7 @@ public class AuthorCUServiceImpl implements AuthorCUService {
     @Override
     public Author update() throws NumberFormatException {
         return new Author(
-                 Long.parseLong(ioservice.userInput("Enter ID:"))
+                 ioservice.userInput("Enter ID:")
                 ,ioservice.userInput("Enter author's first name: ")
                 ,ioservice.userInput("Enter author's last name: ")
         );

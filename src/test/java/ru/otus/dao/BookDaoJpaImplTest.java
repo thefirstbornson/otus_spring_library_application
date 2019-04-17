@@ -46,8 +46,8 @@ public class BookDaoJpaImplTest {
     @BeforeEach
     public void setUp() throws Exception {
         book = new Book(NAME
-                , authorRepository.findById(99L).get()
-                , genreRepository.findById(999L).get()
+                , authorRepository.findById("99").get()
+                , genreRepository.findById("999").get()
         );
     }
 
@@ -58,8 +58,8 @@ public class BookDaoJpaImplTest {
 
     @Test
     public void findAllTest(){
-        Book[] bookArr = {book,new Book(NAME2, authorRepository.findById(88L).get(), genreRepository.findById(888L).get())
-                ,new Book(NAME3, authorRepository.findById(77L).get(), genreRepository.findById(777L).get())};
+        Book[] bookArr = {book,new Book(NAME2, authorRepository.findById("88").get(), genreRepository.findById("888").get())
+                ,new Book(NAME3, authorRepository.findById("77L").get(), genreRepository.findById("777").get())};
         List<String> testBooksNames = Arrays.asList(bookArr)
                 .stream()
                 .map(e->e.getName())
@@ -73,7 +73,7 @@ public class BookDaoJpaImplTest {
     @Test
     public void saveTest(){
         bookRepository.save(book);
-        assertTrue(book.getId()>0);
+        assertTrue(book.getId()!=null);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class BookDaoJpaImplTest {
 
     @Test
     public void findByIdTest(){
-        Book result = bookRepository.findById(9L).get();
+        Book result = bookRepository.findById("9").get();
         assertEquals(NAME,result.getName());
     }
 
@@ -93,7 +93,7 @@ public class BookDaoJpaImplTest {
     @Test
     public void updateTest(){
 
-        book= bookRepository.findById(9L).get();
+        book= bookRepository.findById("9").get();
         book.setName(NAME4);
         bookRepository.save(book);
         assertEquals(NAME4, bookRepository.findById(book.getId()).get().getName());
@@ -102,7 +102,7 @@ public class BookDaoJpaImplTest {
     @Test
     public void deleteTest(){
         bookRepository.save(book);
-        Long id = book.getId();
+        String id = book.getId();
         bookRepository.delete(book);
         assertTrue(!bookRepository.findById(id).isPresent());
     }

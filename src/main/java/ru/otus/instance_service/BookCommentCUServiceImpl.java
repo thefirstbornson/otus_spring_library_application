@@ -22,7 +22,7 @@ public class BookCommentCUServiceImpl implements BookCommentCUService {
 
     @Override
     public BookComment create() {
-        Book book = bookRepository.findById(Long.parseLong(ioservice.userInput("Enter Book ID: "))).get();
+        Book book = bookRepository.findById(ioservice.userInput("Enter Book ID: ")).get();
         return new BookComment(
                 ioservice.userInput(String.format("Leave your comment to %s: ", book.getName()))
                 ,book
@@ -31,8 +31,8 @@ public class BookCommentCUServiceImpl implements BookCommentCUService {
 
     @Override
     public BookComment update() {
-        Book book = bookRepository.findById(Long.parseLong(ioservice.userInput("Enter Book ID: "))).get();
-        BookComment bookComment = bookCommentRepository.findById(Long.parseLong(ioservice.userInput("Enter comment ID: "))).get();
+        Book book = bookRepository.findById(ioservice.userInput("Enter Book ID: ")).get();
+        BookComment bookComment = bookCommentRepository.findById(ioservice.userInput("Enter comment ID: ")).get();
         bookComment.setComment(ioservice.userInput(String.format("Change your comment to %s: ", book.getName())));
         return bookComment;
     }

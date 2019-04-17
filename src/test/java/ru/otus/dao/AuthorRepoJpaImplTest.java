@@ -10,9 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import ru.otus.domain.Author;
-import ru.otus.exception.NoEntityException;
 import ru.otus.repository.AuthorRepository;
 
 import java.util.Arrays;
@@ -20,6 +18,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -70,7 +69,7 @@ public class AuthorRepoJpaImplTest {
     @Test
     public void saveTest(){
         authorDataJpa.save(author);
-        assertTrue(author.getId()>0);
+        assertTrue(author.getId()!=null);
     }
 
     @Test
@@ -83,7 +82,7 @@ public class AuthorRepoJpaImplTest {
 
     @Test
     public void findByIdTest(){
-        Optional<Author> result = authorDataJpa.findById(99L);
+        Optional<Author> result = authorDataJpa.findById("99");
         assertEquals(NAME1,result.get().getFirstName());
         assertEquals(SURNAME1,result.get().getLastName());
     }
@@ -91,7 +90,7 @@ public class AuthorRepoJpaImplTest {
 
     @Test
     public void updateTest(){
-        author= authorDataJpa.findById(99L).get();
+        author= authorDataJpa.findById("99").get();
         author.setFirstName(NAME4);
         author.setLastName(SURNAME4);
         authorDataJpa.save(author);
@@ -102,7 +101,7 @@ public class AuthorRepoJpaImplTest {
     @Test
     public void deleteTest(){
         authorDataJpa.save(author);
-        long id = author.getId();
+        String id = author.getId();
         authorDataJpa.delete(author);
        assertTrue(!authorDataJpa.findById(id).isPresent());
     }

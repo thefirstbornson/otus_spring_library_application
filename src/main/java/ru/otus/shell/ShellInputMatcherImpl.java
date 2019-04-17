@@ -1,7 +1,7 @@
 package ru.otus.shell;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import ru.otus.instance_service.*;
 import ru.otus.repository.AuthorRepository;
@@ -16,7 +16,7 @@ import java.util.Map;
 @Service
 public class ShellInputMatcherImpl implements ShellInputMatcher {
     private final Map<String,CreateUpdateServise> services = new HashMap<>();
-    private final Map<String,JpaRepository> repostoryList = new HashMap<>();
+    private final Map<String,MongoRepository> repostoryList = new HashMap<>();
 
 
     @Autowired
@@ -45,8 +45,8 @@ public class ShellInputMatcherImpl implements ShellInputMatcher {
     }
 
     @Override
-    public JpaRepository getRepository(String instanceType) {
-        JpaRepository dao = repostoryList.get(instanceType);
+    public MongoRepository getRepository(String instanceType) {
+        MongoRepository dao = repostoryList.get(instanceType);
 
         if (dao == null) {
             throw new IllegalArgumentException("Invalid instance type: "
