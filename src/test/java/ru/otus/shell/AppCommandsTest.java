@@ -20,7 +20,6 @@ import ru.otus.repository.AuthorRepository;
 import ru.otus.repository.BookRepository;
 import ru.otus.repository.GenreRepository;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -97,12 +96,12 @@ public class AppCommandsTest {
         assertEquals(BOOKLISTSTRING,commandResult);
     }
 
-    @Test
-    public void getAuthorsByGenreName() {
-        given(ioService.userInput(any())).willReturn("Historical Drama");
-        String commandResult = appCommands.getAuthorsByGenreName();
-        assertEquals("["+AUTHORSTRING3+"]",commandResult);
-    }
+//    @Test
+//    public void getAuthorsByGenreName() {
+//        given(ioService.userInput(any())).willReturn("Historical Drama");
+//        String commandResult = appCommands.getAuthorsByGenreName();
+//        assertEquals("["+AUTHORSTRING3+"]",commandResult);
+//    }
     @Test
     public void count() {
         assertEquals("Total count of 'author' : 3",appCommands.count("author"));

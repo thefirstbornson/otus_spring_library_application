@@ -87,8 +87,7 @@ public class AppCommands {
     public String getBooksByAuthor(){
         BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
         AuthorRepository authorRepo = (AuthorRepository) shellInputMatcher.getRepository("author");
-        return bookRepo.findBooksByAuthor(
-                authorRepo.findById(ioService.userInput("Enter author's ID: ")).get()).toString();
+        return bookRepo.findBooksByAuthor(ioService.userInput("Enter author's name: ")).toString();
 
     }
 
@@ -97,16 +96,15 @@ public class AppCommands {
     public String getBooksByGenre(){
         BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
         GenreRepository genreRepo = (GenreRepository) shellInputMatcher.getRepository("genre");
-        return bookRepo.findBooksByGenre(
-                genreRepo.findById(ioService.userInput("Enter author's ID: ")).get()).toString();
+        return bookRepo.findBooksByGenre(ioService.userInput("Enter author's ID: ")).toString();
     }
 
-    @ShellMethod(value = "This command returns list of author by given genre name",
-            group = "Reports")
-    public String getAuthorsByGenreName(){
-        BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
-        return bookRepo.findAuthorByGenreGenreName(ioService.userInput("Enter genre's name: ")).toString();
-    }
+//    @ShellMethod(value = "This command returns list of author by given genre name",
+//            group = "Reports")
+//    public String getAuthorsByGenreName(){
+//        BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
+//        return bookRepo.findAuthorByGenreGenreName(ioService.userInput("Enter genre's name: ")).toString();
+//    }
 
 }
 

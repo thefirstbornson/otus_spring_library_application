@@ -28,6 +28,7 @@ public class AuthorCUServiceImpl implements AuthorCUService {
                  ioservice.userInput("Enter ID:")
                 ,ioservice.userInput("Enter author's first name: ")
                 ,ioservice.userInput("Enter author's last name: ")
+                ,ioservice.userInput("Enter author's years of life: ")
         );
     }
 }

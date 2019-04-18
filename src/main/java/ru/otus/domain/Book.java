@@ -15,12 +15,14 @@ public class Book {
     @Id
     private String id;
     private String name;
-    private Author author;
-    private Genre genre;
+    private String author;
+    private String genre;
+    private String literaryForm;
 
-    public Book(String name, Author author, Genre genre) {
+    public Book(String name, String author, String genre, String literaryForm) {
         this.name = name;
         this.author = author;
         this.genre = genre;
+        this.literaryForm = literaryForm;
     }
 }

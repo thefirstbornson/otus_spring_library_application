@@ -1,18 +1,17 @@
 package ru.otus.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
-import ru.otus.domain.Author;
+import org.springframework.data.mongodb.repository.Query;
 import ru.otus.domain.Book;
-import ru.otus.domain.Genre;
 
 import java.util.List;
 
 public interface BookRepository extends MongoRepository<Book,String> {
-    List<Book> findBooksByAuthor (Author author);
-    List<Book> findBooksByGenre (Genre genre);
+    List<Book> findBooksByAuthor (String author);
+    List<Book> findBooksByGenre (String genre);
 
-    //@Query("select distinct b.author from Book b join b.author join b.genre where b.genre.genreName = ?1")
-    List<Author> findAuthorByGenreGenreName (String genreName);
+    @Query("'genre'")
+    List<String> findAuthorByGenreGenreName (String genreName);
 
    // @EntityGraph("bookGraph")
 //    @Override
