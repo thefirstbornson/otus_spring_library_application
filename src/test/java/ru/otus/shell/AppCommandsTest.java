@@ -18,7 +18,6 @@ import ru.otus.instance_service.AuthorCUService;
 import ru.otus.ioservice.IOService;
 import ru.otus.repository.AuthorRepository;
 import ru.otus.repository.BookRepository;
-import ru.otus.repository.GenreRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,8 +49,7 @@ public class AppCommandsTest {
     @Autowired
     AuthorRepository authorRepository;
 
-    @Autowired
-    GenreRepository genreRepository;
+
 
     @Autowired
     BookRepository bookRepository;
@@ -63,7 +61,6 @@ public class AppCommandsTest {
     public void setUp(){
         given(shellInputMatcher.getRepository("book")).willReturn(bookRepository);
         given(shellInputMatcher.getRepository("author")).willReturn(authorRepository);
-        given(shellInputMatcher.getRepository("genre")).willReturn(genreRepository);
         given(shellInputMatcher.getServise(any())).willReturn(authorCUService);
         given(authorCUService.create()).willReturn(new Author("Dan","Simmons"));
     }

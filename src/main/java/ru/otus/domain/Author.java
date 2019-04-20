@@ -17,6 +17,12 @@ public class Author {
     private String lastName;
     private String yearsOfLife;
 
+    public Author(String firstName, String lastName, String yearsOfLife) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.yearsOfLife = yearsOfLife;
+    }
+
     public Author(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;

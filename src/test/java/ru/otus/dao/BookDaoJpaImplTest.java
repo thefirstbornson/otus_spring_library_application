@@ -13,7 +13,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.domain.Book;
 import ru.otus.repository.AuthorRepository;
 import ru.otus.repository.BookRepository;
-import ru.otus.repository.GenreRepository;
 
 import java.util.NoSuchElementException;
 
@@ -34,8 +33,7 @@ public class BookDaoJpaImplTest {
     BookRepository bookRepository;
     @Autowired
     AuthorRepository authorRepository;
-    @Autowired
-    GenreRepository genreRepository;
+
     Book book;
 
     @BeforeEach

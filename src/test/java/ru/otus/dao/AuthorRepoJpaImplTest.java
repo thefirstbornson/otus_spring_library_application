@@ -2,20 +2,18 @@ package ru.otus.dao;
 
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.domain.Author;
 import ru.otus.repository.AuthorRepository;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -25,11 +23,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @ExtendWith(SpringExtension.class)
-@DataJpaTest
-@ComponentScan({"ru.otus.dao"})
-@TestPropertySource("classpath:application-test.properties")
+@DataMongoTest
+@EnableConfigurationProperties
+@ComponentScan({"ru.otus.testconfig", "ru.otus.repository"})
 public class AuthorRepoJpaImplTest {
-
+    private static final String ID0 = "1";
+    private static final String NAME0 = "Dmytry";
+    private static final String SURNAME0 = "Bykov";
+    private static final String YEARS0 = "1960-";
     private static final String NAME1 = "Fedor";
     private static final String SURNAME1 = "Dostoevsky";
     private static final String NAME2 = "Viktor";
@@ -40,18 +41,13 @@ public class AuthorRepoJpaImplTest {
     private static final String SURNAME4 = "Akunin";
 
     @Autowired
-    AuthorRepository authorDataJpa;
-    Author author;
+    AuthorRepository authorDataMongo;
 
-    @BeforeEach
-    public void setUp(){
-        author = new Author(NAME1, SURNAME1);
 
-    }
 
     @Test
     public void getCountTest(){
-        assertEquals(3L,(long) authorDataJpa.count());
+        assertEquals(3L,(long) authorDataMongo.count());
     }
 
     @Test
@@ -59,7 +55,7 @@ public class AuthorRepoJpaImplTest {
         String [] testFirstNamesArr = {NAME1,NAME2,NAME3};
         List<String> testFirstNamesList = Arrays.asList(testFirstNamesArr);
 
-        List<String> dbAuthorsNames = authorDataJpa.findAll().stream()
+        List<String> dbAuthorsNames = authorDataMongo.findAll().stream()
                                          .map(Author::getFirstName)
                                          .collect(Collectors.toList());
 
@@ -68,41 +64,51 @@ public class AuthorRepoJpaImplTest {
 
     @Test
     public void saveTest(){
-        authorDataJpa.save(author);
+        Author author = new Author(ID0,NAME0,SURNAME0, YEARS0);
+        author = authorDataMongo.save(author);
         assertTrue(author.getId()!=null);
+        authorDataMongo.delete(author);
     }
 
     @Test
-    public void shouldRaiseAnNoSuchElementException() throws NoSuchElementException {
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
-            authorDataJpa.findById(author.getId()).get();
+    public void shouldRaiseAnIllegalArgumentException() throws IllegalArgumentException {
+        Author author = new Author(NAME0,SURNAME0, YEARS0);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            authorDataMongo.findById(author.getId()).get();
         });
 
     }
 
     @Test
     public void findByIdTest(){
-        Optional<Author> result = authorDataJpa.findById("99");
-        assertEquals(NAME1,result.get().getFirstName());
-        assertEquals(SURNAME1,result.get().getLastName());
+        Author author = new Author(ID0,NAME0,SURNAME0, YEARS0);
+        author = authorDataMongo.save(author);
+        Optional<Author> result = authorDataMongo.findById("1");
+        assertEquals(NAME0,result.get().getFirstName());
+        assertEquals(SURNAME0,result.get().getLastName());
+        authorDataMongo.delete(author);
     }
 
 
     @Test
     public void updateTest(){
-        author= authorDataJpa.findById("99").get();
+        Author author = new Author(ID0,NAME0,SURNAME0, YEARS0);
+        author = authorDataMongo.save(author);
         author.setFirstName(NAME4);
         author.setLastName(SURNAME4);
-        authorDataJpa.save(author);
-        assertEquals(NAME4,authorDataJpa.findById(author.getId()).get().getFirstName());
-        assertEquals(SURNAME4,authorDataJpa.findById(author.getId()).get().getLastName());
+        authorDataMongo.save(author);
+        assertEquals(NAME4, authorDataMongo.findById(author.getId()).get().getFirstName());
+        assertEquals(SURNAME4, authorDataMongo.findById(author.getId()).get().getLastName());
+        authorDataMongo.delete(author);
     }
 
     @Test
     public void deleteTest(){
-        authorDataJpa.save(author);
+        Author author = new Author(ID0,NAME0,SURNAME0, YEARS0);
+        authorDataMongo.save(author);
         String id = author.getId();
-        authorDataJpa.delete(author);
-       assertTrue(!authorDataJpa.findById(id).isPresent());
+        authorDataMongo.delete(author);
+        assertTrue(!authorDataMongo.findById(id).isPresent());
     }
+
 }

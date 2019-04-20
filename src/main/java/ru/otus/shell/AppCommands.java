@@ -6,11 +6,12 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import ru.otus.domain.Book;
 import ru.otus.instance_service.CreateUpdateServise;
 import ru.otus.ioservice.IOService;
-import ru.otus.repository.AuthorRepository;
 import ru.otus.repository.BookRepository;
-import ru.otus.repository.GenreRepository;
+
+import java.util.stream.Collectors;
 
 @ShellComponent
 public class AppCommands {
@@ -71,7 +72,8 @@ public class AppCommands {
     @ShellMethod("show all instances")
     public String showAll(String entityName, @ShellOption(defaultValue = "") String option) {
         MongoRepository mongoRepository = shellInputMatcher.getRepository(entityName);
-        return mongoRepository.findAll().toString();
+        return (String) mongoRepository.findAll()
+                .stream().map(Object::toString).collect(Collectors.joining("\n"));
     }
 
     @ShellMethod("count total entities")
@@ -86,8 +88,8 @@ public class AppCommands {
             group = "Reports")
     public String getBooksByAuthor(){
         BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
-        AuthorRepository authorRepo = (AuthorRepository) shellInputMatcher.getRepository("author");
-        return bookRepo.findBooksByAuthor(ioService.userInput("Enter author's name: ")).toString();
+        return bookRepo.findBooksByAuthor(ioService.userInput("Enter author's name: "))
+                .stream().map(Book::toString).collect(Collectors.joining("\n"));
 
     }
 
@@ -95,16 +97,25 @@ public class AppCommands {
             group = "Reports")
     public String getBooksByGenre(){
         BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
-        GenreRepository genreRepo = (GenreRepository) shellInputMatcher.getRepository("genre");
-        return bookRepo.findBooksByGenre(ioService.userInput("Enter author's ID: ")).toString();
+        return bookRepo.findBooksByGenre(ioService.userInput("Enter genre's name: "))
+                .stream().map(Book::toString).collect(Collectors.joining("\n"));
     }
 
-//    @ShellMethod(value = "This command returns list of author by given genre name",
-//            group = "Reports")
-//    public String getAuthorsByGenreName(){
-//        BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
-//        return bookRepo.findAuthorByGenreGenreName(ioService.userInput("Enter genre's name: ")).toString();
-//    }
+    @ShellMethod(value = "This command returns list of books by given literary form",
+            group = "Reports")
+    public String getBooksByForm(){
+        BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
+        return bookRepo.findBooksByLiteraryForm(ioService.userInput("Enter literary form's name: "))
+                .stream().map(Book::toString).collect(Collectors.joining("\n"));
+    }
+
+    @ShellMethod(value = "This command returns list of author by given genre name",
+            group = "Reports")
+    public String getAuthorsByGenreName(){
+        BookRepository bookRepo = (BookRepository) shellInputMatcher.getRepository("book");
+        return bookRepo.findAuthorByGenreGenreName(ioService.userInput("Enter genre's name: "))
+                .stream().map(String::toString).collect(Collectors.joining("\n"));
+    }
 
 }
 

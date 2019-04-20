@@ -7,7 +7,6 @@ import ru.otus.instance_service.*;
 import ru.otus.repository.AuthorRepository;
 import ru.otus.repository.BookCommentRepository;
 import ru.otus.repository.BookRepository;
-import ru.otus.repository.GenreRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,16 +19,13 @@ public class ShellInputMatcherImpl implements ShellInputMatcher {
 
 
     @Autowired
-    public ShellInputMatcherImpl(AuthorCUService authorCUService, GenreCUService genreCUService
+    public ShellInputMatcherImpl(AuthorCUService authorCUService
             , BookCUService bookCUService, BookCommentCUService bookCommentCUService
-            , AuthorRepository authorRepository, GenreRepository genreRepository
-            , BookRepository bookRepository, BookCommentRepository bookCommentRepository) {
+            , AuthorRepository authorRepository, BookRepository bookRepository, BookCommentRepository bookCommentRepository) {
         services.put("author",authorCUService);
-        services.put("genre",genreCUService);
         services.put("book",bookCUService);
         services.put("bookcomment",bookCommentCUService);
         repostoryList.put("author",authorRepository);
-        repostoryList.put("genre", genreRepository);
         repostoryList.put("book", bookRepository);
         repostoryList.put("bookcomment", bookCommentRepository);
     }

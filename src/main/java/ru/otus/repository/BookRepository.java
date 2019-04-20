@@ -9,11 +9,9 @@ import java.util.List;
 public interface BookRepository extends MongoRepository<Book,String> {
     List<Book> findBooksByAuthor (String author);
     List<Book> findBooksByGenre (String genre);
+    List<Book> findBooksByLiteraryForm (String literaryForm);
 
-    @Query("'genre'")
+    @Query(value="{ 'genre' : ?0 }", fields="{_id: 0,name:0, genre:0,literaryForm:0, _class:0}")
     List<String> findAuthorByGenreGenreName (String genreName);
 
-   // @EntityGraph("bookGraph")
-//    @Override
-//    List<Book>findAll();
 }
