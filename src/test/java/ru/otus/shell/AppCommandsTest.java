@@ -21,17 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-//@ExtendWith(SpringExtension.class)
-//@SpringBootTest
-////@SpringBootTest(properties = {
-////        InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false",
-////        ScriptShellApplicationRunner.SPRING_SHELL_SCRIPT_ENABLED + "=false"
-////})
-//@EnableConfigurationProperties
-//@ComponentScan({"ru.otus.testconfig", "ru.otus.repository"
-//        ,"ru.otus.instance_service", "ru.otus.ioservice","ru.otus.shell"})
-////@TestPropertySource("classpath:application-test.properties")
-////@Transactional
 @ExtendWith(SpringExtension.class)
 @DataMongoTest
 @EnableConfigurationProperties
