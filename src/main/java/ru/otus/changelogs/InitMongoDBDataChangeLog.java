@@ -61,11 +61,5 @@ public class InitMongoDBDataChangeLog {
     @ChangeSet(order = "003", id = "initComments", author = "artem", runAlways = true)
     public void initComments(MongoTemplate template){
         template.save(new BookComment("Great novel!",book));
-
-
-//        insert into book_comment (COMMENT, BOOK_ID) values ('Great novel!',1);
-//        insert into book_comment (COMMENT, BOOK_ID) values ('The worst book I ever read',1);
-//        insert into book_comment (COMMENT, BOOK_ID) values ('The movie is better',1);
-//        insert into book_comment (COMMENT, BOOK_ID) values ('Interesting ending',1);
     }
 }

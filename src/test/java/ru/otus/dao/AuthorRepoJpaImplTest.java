@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnableConfigurationProperties
 @ComponentScan({"ru.otus.testconfig", "ru.otus.repository"})
 public class AuthorRepoJpaImplTest {
+
     private static final String ID0 = "1";
     private static final String NAME0 = "Dmytry";
     private static final String SURNAME0 = "Bykov";
@@ -83,7 +84,7 @@ public class AuthorRepoJpaImplTest {
     public void findByIdTest(){
         Author author = new Author(ID0,NAME0,SURNAME0, YEARS0);
         author = authorDataMongo.save(author);
-        Optional<Author> result = authorDataMongo.findById("1");
+        Optional<Author> result = authorDataMongo.findById(ID0);
         assertEquals(NAME0,result.get().getFirstName());
         assertEquals(SURNAME0,result.get().getLastName());
         authorDataMongo.delete(author);
