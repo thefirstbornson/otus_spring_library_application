@@ -23,11 +23,18 @@ public class BookCommentCUServiceImpl implements BookCommentCUService {
 
     @Override
     public BookComment create() {
-        Book book = bookRepository.findById(ioservice.userInput("Enter Book ID: ")).get();
-        return new BookComment(
-                ioservice.userInput(String.format("Leave your comment to %s: ", book.getName()))
-                ,book
-        );
+        Book book = null;
+        try {
+            book = bookRepository.findById(ioservice.userInput("Enter Book ID: ")).orElseThrow(NoEntityException::new);
+            BookComment bookComment = new BookComment(
+                    ioservice.userInput(String.format("Leave your comment to %s: ", book.getName()))
+                    ,book
+            );
+            return bookComment;
+        } catch (NoEntityException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
