@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataMongoTest
 @EnableConfigurationProperties
 @ComponentScan({"ru.otus.testconfig", "ru.otus.repository"})
-public class BookDaoJpaImplTest {
+public class BookDaoMongoImplTest {
     private static final String NAME = "Anna Karenina";
     private static final String NAME2 = "Snuff";
     private static final String NAME3 = "Red Cross";

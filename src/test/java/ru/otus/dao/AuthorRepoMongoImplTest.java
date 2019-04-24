@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataMongoTest
 @EnableConfigurationProperties
 @ComponentScan({"ru.otus.testconfig", "ru.otus.repository"})
-public class AuthorRepoJpaImplTest {
+public class AuthorRepoMongoImplTest {
 
     private static final String ID0 = "1";
     private static final String NAME0 = "Dmytry";
