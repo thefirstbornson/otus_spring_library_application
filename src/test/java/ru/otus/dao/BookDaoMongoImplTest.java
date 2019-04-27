@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.domain.Book;
-import ru.otus.repository.AuthorRepository;
 import ru.otus.repository.BookRepository;
 
 import java.util.Arrays;
@@ -34,8 +33,6 @@ public class BookDaoMongoImplTest {
 
     @Autowired
     BookRepository bookRepository;
-    @Autowired
-    AuthorRepository authorRepository;
 
     @Test
     public void getCountTest(){

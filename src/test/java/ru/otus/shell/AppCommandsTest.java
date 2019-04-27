@@ -10,10 +10,9 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.otus.domain.Author;
-import ru.otus.instance_service.AuthorCUService;
+import ru.otus.domain.Book;
+import ru.otus.instance_service.BookCUService;
 import ru.otus.ioservice.IOService;
-import ru.otus.repository.AuthorRepository;
 import ru.otus.repository.BookRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,21 +26,19 @@ import static org.mockito.BDDMockito.given;
 @ComponentScan({"ru.otus.testconfig", "ru.otus.repository","ru.otus.shell"})
 
 public class AppCommandsTest {
-    private static final  String AUTHORSTRING = "Author(id=1, firstName=Dan, lastName=Simmons, yearsOfLife=1948-)";
-    private static final  String AUTHORSTRING1 = "Author(id=99, firstName=Fedor, lastName=Dostoevsky, yearsOfLife=1821-1881)";
-    private static final  String AUTHORSTRING2 = "Author(id=88, firstName=Viktor, lastName=Pelevin, yearsOfLife=1962 )";
-    private static final  String AUTHORSTRING3 =  "Author(id=77, firstName=Alexander, lastName=Filipenko, yearsOfLife=1984-)";
-    private static final  String BOOKLISTSTRING = "Book(id=7, name=Red Cross, author=Alexander Filipenko, genre=Historical Drama, literaryForm=Novel)";
+    private static final  String BOOKSTRING = "Book(id=1, name=Terror, author=Dan Simmons, genre=Historical Drama, literaryForm=Novel)";
+    private static final  String BOOKSTRING1 = "Book(id=9, name=Anna Karenina, author=Leo Tolstoy, genre=Drama, literaryForm=Novel)";
+    private static final  String BOOKSTRING2 = "Book(id=8, name=Snuff, author=Viktor Pelevin, genre=Sci-fi, literaryForm=Novel)";
+    private static final  String BOOKSTRING3 = "Book(id=7, name=Red Cross, author=Alexander Filipenko, genre=Historical Drama, literaryForm=Novel)";
 
     @MockBean
     ShellInputMatcher shellInputMatcher;
+
     @MockBean
-    AuthorCUService authorCUService;
+    BookCUService bookCUService;
     @MockBean
     IOService ioService;
 
-    @Autowired
-    AuthorRepository authorRepository;
 
     @Autowired
     BookRepository bookRepository;
@@ -52,38 +49,37 @@ public class AppCommandsTest {
     @BeforeEach
     public void setUp(){
         given(shellInputMatcher.getRepository("book")).willReturn(bookRepository);
-        given(shellInputMatcher.getRepository("author")).willReturn(authorRepository);
-        given(shellInputMatcher.getServise(any())).willReturn(authorCUService);
-        given(authorCUService.create()).willReturn(new Author("1","Dan","Simmons","1948-"));
+        given(shellInputMatcher.getServise(any())).willReturn(bookCUService);
+        given(bookCUService.create()).willReturn(new Book("1","Terror","Dan Simmons","Historical Drama", "Novel"));
     }
 
     @Test
     public void create() {
-        assertEquals(AUTHORSTRING,appCommands.create("author"));
-        authorRepository.delete(authorRepository.findById("1").get());
+        assertEquals(BOOKSTRING,appCommands.create("book"));
+        bookRepository.delete(bookRepository.findById("1").get());
     }
 
     @Test
     public void showAll() {
-        String commandResult = appCommands.showAll("author","");
+        String commandResult = appCommands.showAll("book","");
 
-        assertTrue(commandResult.contains(AUTHORSTRING1)
-                && commandResult.contains(AUTHORSTRING2)
-                && commandResult.contains(AUTHORSTRING3));
+        assertTrue(commandResult.contains(BOOKSTRING1)
+                && commandResult.contains(BOOKSTRING2)
+                && commandResult.contains(BOOKSTRING3));
     }
 
     @Test
     public void getBooksByAuthor() {
         given(ioService.userInput(any())).willReturn("Alexander Filipenko");
         String commandResult = appCommands.getBooksByAuthor();
-        assertEquals(BOOKLISTSTRING,commandResult);
+        assertEquals(BOOKSTRING3,commandResult);
     }
 
     @Test
     public void getBooksByGenre() {
         given(ioService.userInput(any())).willReturn("Historical Drama");
         String commandResult = appCommands.getBooksByGenre();
-        assertEquals(BOOKLISTSTRING,commandResult);
+        assertEquals(BOOKSTRING3,commandResult);
     }
 
     @Test
@@ -94,6 +90,6 @@ public class AppCommandsTest {
     }
     @Test
     public void count() {
-        assertEquals("Total count of 'author' : 3",appCommands.count("author"));
+        assertEquals("Total count of 'book' : 3",appCommands.count("book"));
     }
 }

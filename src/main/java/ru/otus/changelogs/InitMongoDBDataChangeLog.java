@@ -4,7 +4,6 @@ import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
 import com.mongodb.client.MongoDatabase;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.BookComment;
 
@@ -12,7 +11,6 @@ import ru.otus.domain.BookComment;
 @ChangeLog(order = "001")
 public class InitMongoDBDataChangeLog {
 
-    private Author author;
     private Book book;
     private BookComment bookComment;
 
@@ -21,13 +19,7 @@ public class InitMongoDBDataChangeLog {
         database.drop();
     }
 
-    @ChangeSet(order = "001", id = "initAuthors", author = "artem", runAlways = true)
-    public void initAuthors(MongoTemplate template){
-        template.save(new Author("Leo","Tolstoy","1828-1910"));
-        template.save(new Author("Fedor","Dostoevsky","1821-1881"));
-    }
-
-    @ChangeSet(order = "002", id = "initBooks", author = "artem", runAlways = true)
+    @ChangeSet(order = "001", id = "initBooks", author = "artem", runAlways = true)
     public void initBooks(MongoTemplate template){
         book = new Book("5cb7550147765935d8ff403f","Childhood"
                 ,"Leo Tolstoy","Drama","Novel");
@@ -58,7 +50,7 @@ public class InitMongoDBDataChangeLog {
         );
     }
 
-    @ChangeSet(order = "003", id = "initComments", author = "artem", runAlways = true)
+    @ChangeSet(order = "002", id = "initComments", author = "artem", runAlways = true)
     public void initComments(MongoTemplate template){
         template.save(new BookComment("Great novel!",book));
     }
