@@ -3,6 +3,7 @@ package ru.otus.instance_service;
 import org.springframework.stereotype.Service;
 import ru.otus.domain.Book;
 import ru.otus.domain.BookComment;
+import ru.otus.exception.NoEntityException;
 import ru.otus.ioservice.IOService;
 import ru.otus.repository.BookCommentRepository;
 import ru.otus.repository.BookRepository;
@@ -22,18 +23,32 @@ public class BookCommentCUServiceImpl implements BookCommentCUService {
 
     @Override
     public BookComment create() {
-        Book book = bookRepository.findById(Long.parseLong(ioservice.userInput("Enter Book ID: "))).get();
-        return new BookComment(
-                ioservice.userInput(String.format("Leave your comment to %s: ", book.getName()))
-                ,book
-        );
+        Book book = null;
+        try {
+            book = bookRepository.findById(ioservice.userInput("Enter Book ID: ")).orElseThrow(NoEntityException::new);
+            BookComment bookComment = new BookComment(
+                    ioservice.userInput(String.format("Leave your comment to %s: ", book.getName()))
+                    ,book
+            );
+            return bookComment;
+        } catch (NoEntityException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
     public BookComment update() {
-        Book book = bookRepository.findById(Long.parseLong(ioservice.userInput("Enter Book ID: "))).get();
-        BookComment bookComment = bookCommentRepository.findById(Long.parseLong(ioservice.userInput("Enter comment ID: "))).get();
-        bookComment.setComment(ioservice.userInput(String.format("Change your comment to %s: ", book.getName())));
-        return bookComment;
+        Book book = null;
+        try {
+            book = bookRepository.findById(ioservice.userInput("Enter Book ID: ")).orElseThrow(NoEntityException::new);
+            BookComment bookComment = bookCommentRepository.findById(ioservice.userInput("Enter comment ID: "))
+                    .orElseThrow(NoEntityException::new);
+            bookComment.setComment(ioservice.userInput(String.format("Change your comment to %s: ", book.getName())));
+            return bookComment;
+        } catch (NoEntityException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
