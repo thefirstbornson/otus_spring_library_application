@@ -1,11 +1,6 @@
 package ru.otus.domain;
 
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "genre")
@@ -15,9 +10,6 @@ public class Genre {
     private long id;
     @Column(name = "name")
     private String genreName;
-//    @Fetch(FetchMode.SUBSELECT)
-//    @OneToMany(mappedBy = "genre",orphanRemoval = true,fetch = FetchType.EAGER)
-//    private List<Book> books;
 
     public Genre(long id, String genreName) {
         this.id = id;

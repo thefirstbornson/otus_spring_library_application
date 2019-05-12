@@ -1,6 +1,5 @@
 package ru.otus.domain;
 
-import org.hibernate.annotations.BatchSize;
 import javax.persistence.*;
 
 
