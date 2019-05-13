@@ -69,8 +69,9 @@ public class BookController {
                           ,@RequestParam("authorID") long authorID
                           ,@RequestParam("genreID") long genreID
     ){
+        Book book=null;
         try {
-            Book book;
+
             if (bookRepository.existsById(id)){
                 book = bookRepository.findById(id).get();
                 book.setName(name);
@@ -82,11 +83,12 @@ public class BookController {
                         , authorRepository.findById(authorID).orElseThrow(NoEntityException::new)
                         , genreRepository.findById(genreID).orElseThrow(NoEntityException::new)
                 );
-                bookRepository.save(book);
+
             }
         } catch (NoEntityException e) {
             e.printStackTrace();
         }
+        bookRepository.save(book);
         return "redirect:books";
     }
 
