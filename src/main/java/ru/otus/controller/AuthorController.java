@@ -20,12 +20,11 @@ public class AuthorController {
 
     @Autowired
     public AuthorController(AuthorRepository authorRepository) {
-
         this.authorRepository = authorRepository;
     }
 
     @GetMapping("/authors")
-    public String editPageGet( Model model) {
+    public String getAllAuthors( Model model) {
         List<Author> authors = authorRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
         model.addAttribute("authors", authors);
         return "authors";

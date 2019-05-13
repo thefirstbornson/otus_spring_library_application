@@ -29,7 +29,7 @@ public class BookCommentController {
     }
 
     @GetMapping("/bookcomments")
-    public String editPageGet( Model model) {
+    public String getAllBookComments( Model model) {
         List<BookComment> bookComments = bookCommentRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
         model.addAttribute("bookcomments", bookComments);
         return "bookcomments";

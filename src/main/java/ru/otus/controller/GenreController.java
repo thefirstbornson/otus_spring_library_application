@@ -25,7 +25,7 @@ public class GenreController {
     }
 
     @GetMapping("/genres")
-    public String editPageGet( Model model) {
+    public String getAllGenres( Model model) {
         List<Genre> authors = genreRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
         model.addAttribute("genres", authors);
         return "genres";
