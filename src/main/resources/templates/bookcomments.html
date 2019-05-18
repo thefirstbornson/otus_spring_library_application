@@ -72,7 +72,9 @@
                                                                     <button th:value="${bookcomment.getId()}" value="id" name="id" type="submit">edit</button>
                                                                 </form>
                                                             <td>
-                                                                <a th:href="@{/removebookcomment(id=${bookcomment.getId()})}" href="bookcomments.html">delete</a>
+                                                            <form  th:action="@{/removebookcomment}" th:method="post" action="/removebookcomment">
+                                                                <button th:value="${bookcomment.getId()}" value="id" name="id" type="submit">delete</button>
+                                                            </form>
                                                             </td>
                                                         </tr>
                                                         </tbody>

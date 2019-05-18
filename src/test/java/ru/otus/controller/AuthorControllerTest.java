@@ -3,6 +3,7 @@ package ru.otus.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -51,7 +53,6 @@ class AuthorControllerTest {
                 List.of(new Author(1,NAME1,SURNAME1)
                        ,new Author(2, NAME2, SURNAME2)
                         ,new Author(3,NAME3,SURNAME3)));
-
     }
 
     @Test
@@ -61,12 +62,17 @@ class AuthorControllerTest {
         mvc.perform(get("/authors"))
                             .andExpect(status().isOk())
                             .andExpect(content().string(containsString("Fedor")))
+                            .andExpect(view().name(containsString("authors")))
+                            .andExpect(model().attribute("authors", authors))
         ;
+        verify(authorRepository, Mockito.times(1)).findAll(new Sort(Sort.Direction.ASC, "id"));
     }
+
+
 
     @Test
     void removeAuthor() throws Exception {
-        mvc.perform(get("/removeauthor")
+        mvc.perform(post("/removeauthor")
                 .param("id", "1"))
                 .andExpect(redirectedUrl("authors"));
     }

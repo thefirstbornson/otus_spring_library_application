@@ -70,7 +70,9 @@
                                                                     <button th:value="${genre.id}" value="id" name="id" type="submit">edit</button>
                                                                 </form>
                                                             <td>
-                                                                <a th:href="@{/removegenre(id=${genre.id})}" href="genres.html">delete</a>
+                                                            <form  th:action="@{/removegenre}" th:method="post" action="/removegenre">
+                                                                <button th:value="${genre.id}" value="id" name="id" type="submit">delete</button>
+                                                            </form>
                                                             </td>
                                                         </tr>
                                                         </tbody>

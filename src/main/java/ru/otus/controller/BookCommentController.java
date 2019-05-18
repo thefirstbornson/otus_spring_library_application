@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.domain.Book;
 import ru.otus.domain.BookComment;
-import ru.otus.exception.NoEntityException;
 import ru.otus.repository.BookCommentRepository;
 import ru.otus.repository.BookRepository;
 
@@ -35,8 +34,8 @@ public class BookCommentController {
         return "bookcomments";
     }
 
-    @GetMapping("/removebookcomment")
-    public String removeAuthor( @RequestParam("id") long id) {
+    @PostMapping("/removebookcomment")
+    public String removebookcomment( @RequestParam("id") long id) {
         try {
             bookCommentRepository.deleteById(id);
         }catch (DataIntegrityViolationException e){
@@ -47,15 +46,8 @@ public class BookCommentController {
     }
 
     @PostMapping("/editbookcomment")
-    public String editAuthor(@RequestParam("id") long id, Model model){
-        BookComment bookComment=null;
-        if (id>0) {
-            try {
-                bookComment = bookCommentRepository.findById(id).orElseThrow(NoEntityException::new);
-            } catch (NoEntityException e) {
-                e.printStackTrace();
-            }
-        }
+    public String editbookcomment(@RequestParam("id") long id, Model model){
+        BookComment bookComment= bookCommentRepository.findById(id).orElse(null);
         List<Book> books = bookRepository.findAll();
         model.addAttribute("books", books);
         model.addAttribute("bookcomment", bookComment);
@@ -67,17 +59,8 @@ public class BookCommentController {
                           ,@RequestParam("bookcomment") String bcomment
                           ,@RequestParam("bookID") long bookID
     ){
-        BookComment bookComment ;
-            if (bookCommentRepository.existsById(id)){
-                bookComment = bookCommentRepository.findById(id).get();
-                bookComment.setComment(bcomment);
-                bookComment.setBook(bookRepository.findById(bookID).get());
-            } else {
-                bookComment = new BookComment(
-                        bcomment
-                        , bookRepository.findById(bookID).get()
-                );
-            }
+        BookComment bookComment  = bookCommentRepository.findById(id).map(bc -> new BookComment(bc.getId(), bcomment, bookRepository.findById(bookID).get()))
+                                                                     .orElse(new BookComment(bcomment, bookRepository.findById(bookID).get()));
         bookCommentRepository.save(bookComment);
 
         return "redirect:bookcomments";

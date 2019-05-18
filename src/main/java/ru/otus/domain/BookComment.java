@@ -22,6 +22,12 @@ public class BookComment{
         this.book = book;
     }
 
+    public BookComment(long id,String comment, Book book) {
+        this.id = id;
+        this.comment = comment;
+        this.book = book;
+    }
+
     public long getId() {
         return id;
     }

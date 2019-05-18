@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.domain.Author;
-import ru.otus.exception.NoEntityException;
 import ru.otus.repository.AuthorRepository;
 
 import java.util.List;
@@ -20,6 +19,7 @@ public class AuthorController {
 
     @Autowired
     public AuthorController(AuthorRepository authorRepository) {
+
         this.authorRepository = authorRepository;
     }
 
@@ -30,7 +30,7 @@ public class AuthorController {
         return "authors";
     }
 
-    @GetMapping("/removeauthor")
+    @PostMapping("/removeauthor")
     public String removeAuthor( @RequestParam("id") long id) {
         try {
             authorRepository.deleteById(id);
@@ -43,14 +43,7 @@ public class AuthorController {
 
     @PostMapping("/editauthor")
     public String editAuthor(@RequestParam("id") long id, Model model){
-        Author author=null;
-        if (id>0) {
-            try {
-                author = authorRepository.findById(id).orElseThrow(NoEntityException::new);
-            } catch (NoEntityException e) {
-                e.printStackTrace();
-            }
-        }
+        Author author = authorRepository.findById(id).orElse(null);
         model.addAttribute("author", author);
         return "neweditauthor";
     }
@@ -60,14 +53,7 @@ public class AuthorController {
                           ,@RequestParam("fname") String firstName
                           ,@RequestParam("lname") String lastName
     ){
-            Author author;
-            if (authorRepository.existsById(id)){
-                author = authorRepository.findById(id).get();
-                author.setFirstName(firstName);
-                author.setLastName(lastName);
-            } else {
-                author = new Author(firstName, lastName);
-            }
+        Author author = authorRepository.findById(id).map(a -> new Author(a.getId(), firstName, lastName)).orElse(new Author(firstName, lastName));
         authorRepository.save(author);
         return "redirect:authors";
     }

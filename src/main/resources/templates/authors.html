@@ -72,7 +72,9 @@
                                                                     <button th:value="${author.id}" value="id" name="id" type="submit">edit</button>
                                                                 </form>
                                                             <td>
-                                                                <a th:href="@{/removeauthor(id=${author.id})}" href="authors.html">delete</a>
+                                                                <form  th:action="@{/removeauthor}" th:method="post" action="/removeauthor">
+                                                                    <button th:value="${author.id}" value="id" name="id" type="submit">delete</button>
+                                                                </form>
                                                             </td>
                                                         </tr>
                                                         </tbody>

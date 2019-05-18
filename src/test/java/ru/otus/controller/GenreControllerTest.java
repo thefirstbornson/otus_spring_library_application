@@ -3,6 +3,7 @@ package ru.otus.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,11 +20,12 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(GenreController.class)
 class GenreControllerTest {
@@ -53,12 +55,16 @@ class GenreControllerTest {
         mvc.perform(get("/genres"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Tragedy")))
+                .andExpect(view().name(containsString("genres")))
+                .andExpect(model().attribute("genres", genres))
+        ;
+        verify(genreRepository, Mockito.times(1)).findAll(new Sort(Sort.Direction.ASC, "id"));
         ;
     }
 
     @Test
     void removeGenre() throws Exception {
-        mvc.perform(get("/removegenre")
+        mvc.perform(post("/removegenre")
                 .param("id", "1"))
                 .andExpect(redirectedUrl("genres"));
     }

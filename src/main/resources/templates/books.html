@@ -75,14 +75,14 @@
                                                                 </form>
                                                             </td>
                                                             <td>
-                                                                <a th:href="@{/removebook(id=${book.id})}" href="books.html">delete</a>
+                                                                <form  th:action="@{/removebook}" th:method="post" action="/removebook">
+                                                                    <button th:value="${book.id}" value="id" name="id" type="submit">delete</button>
+                                                                </form>
                                                             </td>
                                                         </tr>
                                                         </tbody>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                                                        </tbody>
+                                                    </table>
                                 </td>
                                 <tr>
                                             <td align="center">
@@ -108,5 +108,8 @@
     </tr>
     </tbody>
 </table>
+    <tbody>
+</table>
 </body>
+
 </html>

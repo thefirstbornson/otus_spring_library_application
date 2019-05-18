@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.domain.Genre;
-import ru.otus.exception.NoEntityException;
 import ru.otus.repository.GenreRepository;
 
 import java.util.List;
@@ -31,7 +30,7 @@ public class GenreController {
         return "genres";
     }
 
-    @GetMapping("/removegenre")
+    @PostMapping("/removegenre")
     public String removeGenre( @RequestParam("id") long id) {
         try {
             genreRepository.deleteById(id);
@@ -43,14 +42,7 @@ public class GenreController {
 
     @PostMapping("/editgenre")
     public String editGenre(@RequestParam("id") long id, Model model){
-        Genre genre=null;
-        if (id>0) {
-            try {
-                genre = genreRepository.findById(id).orElseThrow(NoEntityException::new);
-            } catch (NoEntityException e) {
-                e.printStackTrace();
-            }
-        }
+        Genre genre = genreRepository.findById(id).orElse(null);
         model.addAttribute("genre", genre);
         return "neweditgenre";
     }
@@ -60,13 +52,7 @@ public class GenreController {
             ,@RequestParam("genrename") String genrename
 
     ){
-        Genre genre;
-        if (genreRepository.existsById(id)){
-            genre = genreRepository.findById(id).get();
-            genre.setGenreName(genrename);
-        } else {
-            genre= new Genre( genrename);
-        }
+        Genre genre = genreRepository.findById(id).map(g -> new Genre(g.getId(), genrename)).orElse(new  Genre(genrename));
         genreRepository.save(genre);
         return "redirect:genres";
     }

@@ -3,6 +3,7 @@ package ru.otus.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,11 +24,11 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(BookController.class)
@@ -35,7 +36,6 @@ class BookControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
 
     @MockBean
     BookRepository bookRepository;
@@ -63,12 +63,17 @@ class BookControllerTest {
         mvc.perform(get("/books"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Aristonomia")))
+                .andExpect(view().name(containsString("books")))
+                .andExpect(model().attribute("books", books))
+        ;
+        verify(bookRepository, Mockito.times(1)).findAll(new Sort(Sort.Direction.ASC, "id"));
+
         ;
     }
 
     @Test
     void removeBook() throws Exception {
-        mvc.perform(get("/removebook")
+        mvc.perform(post("/removebook")
                 .param("id", "1"))
                 .andExpect(redirectedUrl("books"));
     }
@@ -86,11 +91,18 @@ class BookControllerTest {
 
     @Test
     void saveBook() throws Exception {
+        given(bookRepository.findById(any()))
+                .willReturn( Optional.of(book));
+        given(authorRepository.findById(any()))
+                .willReturn(Optional.of(new Author("Viktor","Pelevin")));
+        given(genreRepository.findById(any()))
+                .willReturn(Optional.of(new Genre("sci-fi")));
+
         mvc.perform(post("/savebook")
                 .param("id", "1")
-                .param("name", "Harry Potter")
-                .param("authorID", "55")
-                .param("genreID", "55"))
+                .param("name", "Snuff")
+                .param("authorID", "1")
+                .param("genreID", "1"))
                 .andExpect(redirectedUrl("books"));
     }
 }

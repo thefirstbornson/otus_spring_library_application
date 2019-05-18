@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
-import ru.otus.exception.NoEntityException;
 import ru.otus.repository.AuthorRepository;
 import ru.otus.repository.BookRepository;
 import ru.otus.repository.GenreRepository;
@@ -38,7 +37,7 @@ public class BookController {
         return "books";
     }
 
-    @GetMapping("/removebook")
+    @PostMapping("/removebook")
     public String removeBook( @RequestParam("id") long id) {
         bookRepository.deleteById(id);
         return "redirect:books";
@@ -46,20 +45,13 @@ public class BookController {
 
     @PostMapping("/editbook")
     public String editBook(@RequestParam("id") long id, Model model){
-        Book book=null;
-        if (id>0) {
-            try {
-                book = bookRepository.findById(id).orElseThrow(NoEntityException::new);
-                model.addAttribute("book", book);
-            } catch (NoEntityException e) {
-                e.printStackTrace();
-            }
-        }
+
+        Book book = bookRepository.findById(id).orElse(null);
         List<Author> authors = authorRepository.findAll();
-        model.addAttribute("authors", authors);
         List<Genre> genres = genreRepository.findAll();
-        model.addAttribute("genres", genres);
         model.addAttribute("book", book);
+        model.addAttribute("authors", authors);
+        model.addAttribute("genres", genres);
         return "neweditbook";
     }
 
@@ -69,25 +61,13 @@ public class BookController {
                           ,@RequestParam("authorID") long authorID
                           ,@RequestParam("genreID") long genreID
     ){
-        Book book=null;
-        try {
-
-            if (bookRepository.existsById(id)){
-                book = bookRepository.findById(id).get();
-                book.setName(name);
-                book.setAuthor(authorRepository.findById(authorID).orElseThrow(NoEntityException::new));
-                book.setGenre(genreRepository.findById(genreID).orElseThrow(NoEntityException::new));
-            } else {
-                book = new Book(
-                        name
-                        , authorRepository.findById(authorID).orElseThrow(NoEntityException::new)
-                        , genreRepository.findById(genreID).orElseThrow(NoEntityException::new)
-                );
-
-            }
-        } catch (NoEntityException e) {
-            e.printStackTrace();
-        }
+        Book book = authorRepository.findById(id).map(b -> new Book(b.getId()
+                , name
+                , authorRepository.findById(authorID).get()
+                , genreRepository.findById(genreID).get()))
+                .orElse(new Book(name
+                        , authorRepository.findById(authorID).get()
+                        , genreRepository.findById(genreID).get()));
         bookRepository.save(book);
         return "redirect:books";
     }
