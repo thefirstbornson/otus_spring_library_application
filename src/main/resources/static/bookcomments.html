@@ -19,7 +19,7 @@
             <table border="0" width="100%" cellspacing="0" cellpadding="0" >
                 <tbody>
                 <tr>
-                    <td align="center" ><img th:src="@{otus.jpg}"  src="../static/otus.jpg"  alt="" width="137" height="61" /></td>
+                    <td align="center" ><img th:src="@{otus.jpg}" src="otus.jpg" alt="" width="137" height="61" /></td>
                 </tr>
                 <tr bgcolor="#ffcc00">
                     <td height="31" align="center">
@@ -40,16 +40,16 @@
                                                     <tbody>
                                                     <tr>
                                                         <th align="left">
-                                                            <a  href="\books">Books</a>
+                                                            <a  href="\books.html">Books</a>
                                                         </th>
                                                         <th align="left">
-                                                            <a  href="\authors">Authors</a>
+                                                            <a  href="\authors.html">Authors</a>
                                                         </th>
                                                         <th align="left">
-                                                            <a  href="\genres">Genres</a>
+                                                            <a  href="\genres.html">Genres</a>
                                                         </th>
                                                         <th align="left">
-                                                            <a  href="\bookcomments">Book comments</a>
+                                                            <a  href="\bookcomments.html">Book comments</a>
                                                         </th>
                                                     </tr>
                                                     </tbody>
@@ -58,37 +58,39 @@
                                                         <thead>
                                                         <tr>
                                                             <th>ID</th>
-                                                            <th>Genre name</th>
+                                                            <th>Book</th>
+                                                            <th>Comment</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
-                                                        <tr th:each="genre : ${genres}">
-                                                            <td th:text="${genre.id}">id</td>
-                                                            <td th:text="${genre.genreName}">genre name</td>
+                                                        <tr th:each="bookcomment : ${bookcomments}">
+                                                            <td th:text="${bookcomment.getId()}">id</td>
+                                                            <td th:text="${bookcomment.getBook().getName()}">Book</td>
+                                                            <td th:text="${bookcomment.comment}">Comment</td>
                                                             <td>
-                                                                <form  th:action="@{/editgenre}" th:method="post" action="neweditgenre.html">
-                                                                    <button th:value="${genre.id}" value="id" name="id" type="submit">edit</button>
+                                                                <form  th:action="@{/editbookcomment}" th:method="post" action="neweditbookcomment.html">
+                                                                    <button th:value="${bookcomment.getId()}" value="id" name="id" type="submit">edit</button>
                                                                 </form>
                                                             <td>
-                                                            <form  th:action="@{/removegenre}" th:method="post" action="/removegenre">
-                                                                <button th:value="${genre.id}" value="id" name="id" type="submit">delete</button>
+                                                            <form  th:action="@{/removebookcomment}" th:method="post" action="/removebookcomment">
+                                                                <button th:value="${bookcomment.getId()}" value="id" name="id" type="submit">delete</button>
                                                             </form>
                                                             </td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
                                             </td>
-                                        <tr>
-                                            <td align="center">
-                                                <form  th:action="@{/editgenre}" th:method="post" action="neweditgenre.html">
-                                                    <button  value="0" name="id" type="submit" >new genre</button>
-                                                </form>
-                                            </td>
-                                        </tr>
                                         </tr>
                                         </tbody>
                                     </table>
                                 </td>
+                            <tr>
+                                <td align="center">
+                                    <form  th:action="@{/editbookcomment}" th:method="post" action="neweditbookcomment.html">
+                                        <button  value="0" name="id" type="submit" >new comment</button>
+                                    </form>
+                                </td>
+                            </tr>
                             </tr>
                             </tbody>
                         </table>

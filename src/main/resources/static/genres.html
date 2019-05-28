@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
 
     <title>Otus</title>
@@ -9,6 +9,7 @@
     <style type="text/css">
         html, body { height:100%; margin:0px; padding:0px; }
     </style>
+    <script src="webjars/vue/2.5.16/vue.min.js"></script>
 
 </head>
 <body>
@@ -19,7 +20,7 @@
             <table border="0" width="100%" cellspacing="0" cellpadding="0" >
                 <tbody>
                 <tr>
-                    <td align="center" ><img th:src="@{otus.jpg}"  src="../static/otus.jpg"  alt="" width="137" height="61" /></td>
+                    <td align="center" ><img th:src="@{otus.jpg}" src="otus.jpg" alt="" width="137" height="61" /></td>
                 </tr>
                 <tr bgcolor="#ffcc00">
                     <td height="31" align="center">
@@ -40,58 +41,54 @@
                                                     <tbody>
                                                     <tr>
                                                         <th align="left">
-                                                            <a  href="\books">Books</a>
+                                                            <a  href="\books.html">Books</a>
                                                         </th>
                                                         <th align="left">
-                                                            <a  href="\authors">Authors</a>
+                                                            <a  href="\authors.html">Authors</a>
                                                         </th>
                                                         <th align="left">
-                                                            <a  href="\genres">Genres</a>
+                                                            <a  href="\genres.html">Genres</a>
                                                         </th>
                                                         <th align="left">
-                                                            <a  href="\bookcomments">Book comments</a>
+                                                            <a  href="\bookcomments.html">Book comments</a>
                                                         </th>
                                                     </tr>
                                                     </tbody>
                                                 </table>
-                                                    <table  align="center">
+                                                    <table class="genres" id="genres-table"  align="center">
                                                         <thead>
                                                         <tr>
                                                             <th>ID</th>
-                                                            <th>First name</th>
-                                                            <th>Last Name</th>
+                                                            <th>Genre name</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
-                                                        <tr th:each="author : ${authors}">
-                                                            <td th:text="${author.id}">id</td>
-                                                            <td th:text="${author.firstName}">firstName</td>
-                                                            <td th:text="${author.lastName}">lastName</td>
+                                                        <tr v-for="genre in genres">
+                                                            <td>{{ genre.id }}</td>
+                                                            <td>{{ genre.genreName }}</td>
                                                             <td>
-                                                                <form  th:action="@{/editauthor}" th:method="post" action="neweditauthor.html">
-                                                                    <button th:value="${author.id}" value="id" name="id" type="submit">edit</button>
+                                                                <form  method="" action="neweditgenre.html">
+                                                                    <button name="edit"  v-on:click="f_edit(genre.id)">edit</button>
                                                                 </form>
+                                                            </td>
                                                             <td>
-                                                                <form  th:action="@{/removeauthor}" th:method="post" action="/removeauthor">
-                                                                    <button th:value="${author.id}" value="id" name="id" type="submit">delete</button>
-                                                                </form>
+                                                                <button name="delete" class="destroy"  v-on:click="f_delete(genre.id)">del</button>
                                                             </td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
-                                                </form></div>
                                             </td>
+                                        <tr>
+                                            <td align="center">
+                                                <form  th:action="@{/editgenre}" th:method="post" action="neweditgenre.html">
+                                                    <button  value="0" name="id" type="submit" >new genre</button>
+                                                </form>
+                                            </td>
+                                        </tr>
                                         </tr>
                                         </tbody>
                                     </table>
                                 </td>
-                            <tr>
-                                <td align="center">
-                                    <form  th:action="@{/editauthor}" th:method="post" action="neweditauthor.html">
-                                        <button  value="0" name="id" type="submit" >new author</button>
-                                    </form>
-                                </td>
-                            </tr>
                             </tr>
                             </tbody>
                         </table>
@@ -110,4 +107,20 @@
     </tbody>
 </table>
 </body>
+<script>
+    // fetch, ES6, Vue
+    fetch('/genres')
+        .then(response => response.json())
+        .then(genres => {
+            new Vue({
+                el: '#genres-table',
+                data: {
+                    genres: genres
+                }
+            })
+        });
+
+</script>
+<script src="/genre.js"></script>
+
 </html>
