@@ -1,11 +1,10 @@
 package ru.otus.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.controller.dto.DtoConversion;
@@ -14,59 +13,57 @@ import ru.otus.domain.Genre;
 import ru.otus.repository.GenreRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Controller
 public class GenreController {
     private final GenreRepository genreRepository;
-    private final ModelMapper modelMapper;
-
     @Autowired
-    public GenreController(GenreRepository genreRepository, ModelMapper modelMapper) {
-
+    public GenreController(GenreRepository genreRepository, DtoConversion<Genre,GenreDto> dtoConversion) {
         this.genreRepository = genreRepository;
-
-        this.modelMapper = modelMapper;
     }
 
     @GetMapping("/genres")
-    @ResponseBody
-    public List<GenreDto> getAllGenres() {
+    public ResponseEntity<?> getAllGenres() {
         List<Genre> genres = genreRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
-        return genres.stream().map(e->new DtoConversion<Genre, GenreDto>(modelMapper).convertToDto(e,GenreDto.class))
-                .collect(Collectors.toList());
-    }
-
-    @DeleteMapping(value="/genres/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
-            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseBody
-    public String removeGenre( @PathVariable("id") long id) {
-        try {
-            genreRepository.deleteById(id);
-        }catch (DataIntegrityViolationException e){
-            e.printStackTrace();
-            return "{\"state\":\"failed\"}";
+        if (!genres.isEmpty()){
+            return new ResponseEntity<>(genres,HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND);
         }
-        return "{\"state\":\"deleted\"}";
     }
 
-    @PutMapping(value="/genres/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
-            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseBody
-    public GenreDto editGenre(@PathVariable("id") long id){
-        Genre genre = genreRepository.findById(id).orElse(null);
-        return new DtoConversion<Genre, GenreDto>(modelMapper).convertToDto(genre,GenreDto.class);
+    @GetMapping("/genres/{id}")
+    public ResponseEntity<?> getGenre(@PathVariable("id") long id) {
+        Optional<Genre> genre = genreRepository.findById(id);
+        return genre.<ResponseEntity<?>>map(genre1 -> new ResponseEntity<>(genre1, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping(value="/genres", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+    @DeleteMapping(value="/genres/{id}")
+    public ResponseEntity<?> deleteGenre(@PathVariable("id") long id){
+        genreRepository.deleteById(id);
+        return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
+    }
+
+    @PutMapping(value="/genres"
+            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> editGenre(@RequestBody GenreDto requestBody){
+        if (genreRepository.findById(requestBody.getId()).isPresent()){
+            genreRepository.save(new Genre(requestBody.getId(),  requestBody.getGenreName()));
+            return (new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK));
+        }else{
+            return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @PostMapping(value="/genres"
+            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
             , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String saveGenre(@RequestBody JsonNode requestBody){
-        long id = requestBody.get("id").longValue();
-        String genreName = requestBody.get("genreName").toString();
-
-        Genre genre = genreRepository.findById(id).map(g -> new Genre(g.getId(), genreName)).orElse(new  Genre(genreName));
-        genreRepository.save(genre);
-        return  "{\"state\":\"saved\"}";
+    public ResponseEntity<?> saveGenre(@RequestBody GenreDto requestBody){
+        genreRepository.save(new Genre( requestBody.getGenreName()));
+        return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
     }
 }

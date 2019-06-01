@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
 
     <title>Otus</title>
@@ -9,7 +9,7 @@
     <style type="text/css">
         html, body { height:100%; margin:0px; padding:0px; }
     </style>
-
+    <script src="webjars/vue/2.5.16/vue.min.js"></script>
 </head>
 <body>
 <table border="0" style="width:100%; height:100%;">
@@ -54,7 +54,7 @@
                                                         </tr>
                                                         </tbody>
                                                     </table>
-                                                    <table  align="center" cellspacing="0" cellpadding="5">
+                                                    <table class="books" id="books-table" align="center" cellspacing="0" cellpadding="5">
                                                         <thead>
                                                         <tr>
                                                             <th>ID</th>
@@ -64,20 +64,18 @@
                                                         </tr>
                                                         </thead>
                                                         <tbody>
-                                                        <tr th:each="book : ${books}">
-                                                            <td th:text="${book.id}">id</td>
-                                                            <td th:text="${book.name}">book caption</td>
-                                                            <td th:text="${book.author.getFirstName()+ ' ' +book.author.getLastName()}">author's name</td>
-                                                            <td th:text="${book.genre.genreName}">genre's name</td>
+                                                        <tr v-for="book in books">
+                                                            <td>{{ book.id }}</td>
+                                                            <td>{{ book.name}}</td>
+                                                            <td>{{ book.author.firstName}}</td>
+                                                            <td>{{ book.genre.genreName}}</td>
                                                             <td>
-                                                                <form  th:action="@{/editbook}" th:method="post" action="neweditbook.html">
-                                                                    <button th:value="${book.id}" value="id" name="id" type="submit">edit</button>
+                                                                <form  method="" action="neweditbook.html">
+                                                                    <button name="edit"  v-on:click="f_edit(book.id)">edit</button>
                                                                 </form>
                                                             </td>
                                                             <td>
-                                                                <form  th:action="@{/removebook}" th:method="post" action="/removebook">
-                                                                    <button th:value="${book.id}" value="id" name="id" type="submit">delete</button>
-                                                                </form>
+                                                                <button name="delete" class="destroy"  v-on:click="f_delete(book.id)">del</button>
                                                             </td>
                                                         </tr>
                                                         </tbody>
@@ -86,7 +84,7 @@
                                 </td>
                                 <tr>
                                             <td align="center">
-                                                <form  th:action="@{/editbook}" th:method="post" action="neweditbook.html">
+                                                <form  action="neweditbook.html">
                                                     <button  value="0" name="id" type="submit" >new book</button>
                                                 </form>
                                             </td>
@@ -111,5 +109,20 @@
     <tbody>
 </table>
 </body>
+<script>
+    // fetch, ES6, Vue
+    fetch('/books')
+        .then(response => response.json())
+        .then(books => {
+            new Vue({
+                el: '#books-table',
+                data: {
+                    books: books
+                }
+            })
+        });
+
+</script>
+<script src="/book.js"></script>
 
 </html>

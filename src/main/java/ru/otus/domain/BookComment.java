@@ -17,7 +17,7 @@ public class BookComment{
     private long id;
     @Column(name = "comment")
     private String comment;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="book_id")
     private Book book;
 

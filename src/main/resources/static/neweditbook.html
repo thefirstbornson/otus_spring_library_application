@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8"/>
     <title>Edit book</title>
@@ -22,51 +22,129 @@
         }
     </style>
 </head>
+<script src="webjars/vue/2.5.16/vue.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <body>
 
-<form id="edit-form" th:action="@{/savebook}" th:method="post" action="neweditbook.html">
+<form id="book" name="book" action="neweditbook.html">
     <h1>Book Info:</h1>
 
     <div class="row" >
-        <label for="id-input">ID:</label>
-        <input id="id-input" name ="id" readonly="readonly" type="text" th:if="${book != null && book.id != null}" th:value="${book.id}"  value=""/>
-        <input id="id-inpu" name ="id" readonly="readonly" type="hidden" th:unless="${book != null && book.id != null}" th:value="${0}"  value="0"/>
+        <label for="id-input" >ID:</label>
+        <input id="id-input" name ="id" readonly="readonly" type="text" v-show="book.id" v-model="book.id"/>
     </div>
 
     <div class="row">
-        <label for="name-input">Name:</label>
-        <input id="name-input" name="name" type="text" th:if="${book != null && book.name != null}" th:value="${book.name}" value=""/>
-        <input id="name-inpu" name="name" type="text" th:unless="${book != null && book.name != null}" th:value="${null}" value=""/>
+        <label>Name:</label>
+        <input id="name-edit" name="name" type="text" v-if="book.name" v-model="book.name "/>
+        <input id="name-new" name="name" type="text"  v-else value=""/>
+        <input id="test"/>
+    </div>
+
+    <!--<input id="author_id" name="name" type="text" v-if="book.author.id" v-model="book.author.id"  hidden/>-->
+
+    <!--<div class="row">-->
+        <!--<label >Author's first name:</label>-->
+        <!--<input id="author-edit" name="name" type="text" v-if="book.author.firstName" v-model="book.author.firstName"readonly="readonly"/>-->
+        <!--<input id="author-new" name="name" type="text"  v-else value=""/>-->
+    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+    <!--<div id="author123" >-->
+        <!--<select>-->
+            <!--<option v-for="author in authors1"  v-bind:value="author.id">-->
+                <!--{{ author.firstName }}-->
+            <!--</option>-->
+        <!--</select>-->
+        <!--&lt;!&ndash;<span v-if="selectedAuthor!==null">Выбрано: {{selectedUser.name}} - {{selectedUser.age}}</span>&ndash;&gt;-->
+    <!--</div>-->
+
+    <!--<div class="row">-->
+    <!--<label >Author's last name:</label>-->
+    <!--<input id="authorlastname-edit" name="name" type="text" v-if="book.author.firstName" v-model="book.author.lastName" readonly="readonly"/>-->
+    <!--<input id="authorlastname-new" name="name" type="text"  v-else value=""/>-->
+    <!--</div>-->
+
+    <!--<input id="genre_id" name="name" type="text" v-model="book.genre.id"  hidden/>-->
+
+    <div class="row">
+        <label>Genre:</label>
+        <input id="genre-edit" name="name" type="text" v-if="book.genre.genreName" v-model="book.genre.genreName" readonly="readonly"/>
+        <input id="genre-new" name="name" type="text"  v-else value=""/>
     </div>
 
     <div class="row">
-        <label for="author-input">Author:</label>
-        <select id="author-input" name="authorID" >
-            <option disabled>Choose author</option>
-            <option th:each="author : ${authors}"
-                    th:value="${author.id}"
-                    th:utext="${author.getFirstName()+ ' ' +author.getLastName()}"
-                    th:selected="${book != null && book.author.id==author.id}"
-                    value="Author">Author</option>
-        </select>
-    </div>
-
-    <div class="row">
-        <label for="genre-input">Genre:</label>
-        <select id="genre-input" name="genreID">
-            <option disabled>Choose genre</option>
-            <option th:each="genre : ${genres}"
-                    th:value="${genre.id}"
-                    th:utext="${genre.genreName}"
-                    th:selected="${book != null && book.genre.id==genre.id}"
-                    value="Author">Genre</option>
-        </select>
-    </div>
-
-    <div class="row">
-        <button type="submit">Save</button>
+        <button type="submit" onclick="f_save()">Save</button>
     </div>
 </form>
 
 </body>
+<script>
+
+   // id = localStorage.getItem("book_id");
+   // localStorage.clear();
+   // if (id) {
+   //     fetch('/books/'+id, {
+   //         method: 'put',
+   //         headers: {
+   //             'Accept': 'application/json',
+   //             'Content-Type': 'application/json'
+   //         },
+   //         body:  JSON.stringify({id: id})
+   //     })
+   //         .then(response => response.json())
+   //         .then(book => {
+   //             new Vue({
+   //                 el: '#book'
+   //                 , data: {
+   //                     book: book
+   //                 }
+   //             })
+   //         })
+   // } else {
+   //     new Vue({
+   //         el: '#book'
+   //         , data: {
+   //             book: {id:"",name:"",author:"",genre:""}
+   //         }
+   //     })
+   // }
+
+
+</script>
+
+<script>
+    id = localStorage.getItem("book_id");
+    // localStorage.clear();
+
+    var book;
+    $.ajax({
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        dataType: "json",
+        accepts: {text: "application/json"},
+        url: '/books/'+id,
+        type: 'PUT',
+        success: function(result) {
+            book=result;
+        }
+    });
+
+    $('#test').val(book);
+
+
+
+    // const vl = new Vue({
+    //     el: '#book'
+    //     , data: {
+    //         book: null
+    //     },
+    //     mounted() {
+    //         axios.put('/books/'+id).then(response => {
+    //             this.book = response.data
+    //         })
+    //     }
+    // })
+</script>
 </html>

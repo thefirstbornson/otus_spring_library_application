@@ -26,15 +26,12 @@
     <script src="webjars/vue/2.5.16/vue.min.js"></script>
 </head>
 <body>
-
+<div class="row" >
+    <label for="id-input" >ID:</label>
+    <input id="id-input" name ="id" readonly="readonly" type="text" v-show="author.id" v-model="author.id"/>
+</div>
 <form id="author" name="author" action="neweditauthor.html">
     <h1>Author Info:</h1>
-
-    <div class="row" >
-        <label for="id-input" >ID:</label>
-        <input id="id-input" name ="id" readonly="readonly" type="text" v-show="author.id" v-model="author.id"/>
-    </div>
-
     <div class="row">
         <label>First name:</label>
         <input id="firstname-edit" name="fname" type="text" v-if="author.firstName" v-model=" author.firstName "/>
