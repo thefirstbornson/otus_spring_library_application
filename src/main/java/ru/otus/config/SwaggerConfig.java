@@ -1,4 +1,4 @@
-package ru.otus.controller.config;
+package ru.otus.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
