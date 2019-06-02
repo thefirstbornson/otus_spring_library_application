@@ -45,14 +45,14 @@ public class BookCommentController {
         return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
     }
 
-    @PutMapping(value="/bookcomments"
+    @PutMapping(value="/bookcomments/{id}"
             , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
             , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> editBookComment(@RequestBody BookComment requestBody){
-        if (bookCommentRepository.findById(requestBody.getId()).isPresent()){
-            bookCommentRepository.save(new BookComment(requestBody.getId()
-                    , requestBody.getComment()
-                    ,requestBody.getBook()));
+    public ResponseEntity<?> editBookComment(@PathVariable("id") long id,@RequestBody BookComment requestBody){
+        if (bookCommentRepository.findById(id).isPresent()){
+            bookCommentRepository.save(new BookComment(id
+                                                        ,requestBody.getComment()
+                                                        ,requestBody.getBook()));
             return (new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK));
         }else{
             return new ResponseEntity<>( HttpStatus.NO_CONTENT);

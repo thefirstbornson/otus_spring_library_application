@@ -7,8 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.otus.controller.dto.AuthorDto;
-import ru.otus.controller.dto.DtoConversion;
 import ru.otus.domain.Author;
 import ru.otus.repository.AuthorRepository;
 
@@ -20,7 +18,7 @@ public class AuthorController {
     private final AuthorRepository authorRepository;
 
     @Autowired
-    public AuthorController(AuthorRepository authorRepository, DtoConversion<Author, AuthorDto> dtoConversion) {
+    public AuthorController(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
     }
 
@@ -47,12 +45,12 @@ public class AuthorController {
        return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
     }
 
-    @PutMapping(value="/authors"
+    @PutMapping(value="/authors/{id}"
             , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
             , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> editAuthor(@RequestBody AuthorDto requestBody){
-        if (authorRepository.findById(requestBody.getId()).isPresent()){
-            authorRepository.save(new Author(requestBody.getId(), requestBody.getFirstName(), requestBody.getLastName()));
+    public ResponseEntity<?> editAuthor(@PathVariable("id") long id, @RequestBody Author requestBody){
+        if (authorRepository.findById(id).isPresent()){
+            authorRepository.save(new Author(id, requestBody.getFirstName(), requestBody.getLastName()));
             return (new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK));
         }else{
             return new ResponseEntity<>( HttpStatus.NO_CONTENT);
@@ -63,7 +61,7 @@ public class AuthorController {
             , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
             , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<?> saveAuthor(@RequestBody AuthorDto requestBody){
+    public ResponseEntity<?> saveAuthor(@RequestBody Author requestBody){
         authorRepository.save(new Author( requestBody.getFirstName(), requestBody.getLastName()));
         return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
     }

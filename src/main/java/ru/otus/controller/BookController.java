@@ -45,12 +45,12 @@ public class BookController {
         return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
     }
 
-    @PutMapping(value="/books"
+    @PutMapping(value="/books/{id}"
             , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
             , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> editBook(@RequestBody Book requestBody){
-        if (bookRepository.findById(requestBody.getId()).isPresent()){
-            bookRepository.save(new Book(requestBody.getId()
+    public ResponseEntity<?> editBook(@PathVariable("id") long id,@RequestBody Book requestBody){
+        if (bookRepository.findById(id).isPresent()){
+            bookRepository.save(new Book(id
                     , requestBody.getName()
                     , requestBody.getAuthor()
                     , requestBody.getGenre()));

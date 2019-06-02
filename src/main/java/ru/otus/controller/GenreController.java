@@ -7,8 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.otus.controller.dto.DtoConversion;
-import ru.otus.controller.dto.GenreDto;
 import ru.otus.domain.Genre;
 import ru.otus.repository.GenreRepository;
 
@@ -19,7 +17,7 @@ import java.util.Optional;
 public class GenreController {
     private final GenreRepository genreRepository;
     @Autowired
-    public GenreController(GenreRepository genreRepository, DtoConversion<Genre,GenreDto> dtoConversion) {
+    public GenreController(GenreRepository genreRepository) {
         this.genreRepository = genreRepository;
     }
 
@@ -46,12 +44,12 @@ public class GenreController {
         return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
     }
 
-    @PutMapping(value="/genres"
+    @PutMapping(value="/genres/{id}"
             , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
             , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> editGenre(@RequestBody GenreDto requestBody){
-        if (genreRepository.findById(requestBody.getId()).isPresent()){
-            genreRepository.save(new Genre(requestBody.getId(),  requestBody.getGenreName()));
+    public ResponseEntity<?> editGenre(@PathVariable("id") long id,@RequestBody Genre requestBody){
+        if (genreRepository.findById(id).isPresent()){
+            genreRepository.save(new Genre(id,  requestBody.getGenreName()));
             return (new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK));
         }else{
             return new ResponseEntity<>( HttpStatus.NO_CONTENT);
@@ -62,7 +60,7 @@ public class GenreController {
             , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
             , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public ResponseEntity<?> saveGenre(@RequestBody GenreDto requestBody){
+    public ResponseEntity<?> saveGenre(@RequestBody Genre requestBody){
         genreRepository.save(new Genre( requestBody.getGenreName()));
         return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
     }
