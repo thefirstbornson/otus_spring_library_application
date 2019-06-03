@@ -2,74 +2,73 @@ package ru.otus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import ru.otus.domain.Author;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import ru.otus.domain.Book;
-import ru.otus.domain.Genre;
-import ru.otus.repository.AuthorRepository;
 import ru.otus.repository.BookRepository;
-import ru.otus.repository.GenreRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-@Controller
+@RestController
 public class BookController {
     private final BookRepository bookRepository;
-    private final AuthorRepository authorRepository;
-    private final GenreRepository genreRepository;
 
     @Autowired
-    public BookController(BookRepository bookRepository1, AuthorRepository authorRepository, GenreRepository genreRepository) {
+    public BookController(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
 
-        this.bookRepository = bookRepository1;
-        this.authorRepository = authorRepository;
-        this.genreRepository = genreRepository;
     }
 
     @GetMapping("/books")
-    public String getAllBooks( Model model) {
+    public ResponseEntity<?> getAllBooks() {
         List<Book> books = bookRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
-        model.addAttribute("books", books);
-        return "books";
+        if (!books.isEmpty()){
+            return new ResponseEntity<>(books,HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND);
+        }
     }
 
-    @PostMapping("/removebook")
-    public String removeBook( @RequestParam("id") long id) {
+    @GetMapping("/books/{id}")
+    public ResponseEntity<?> getBook(@PathVariable("id") long id) {
+        Optional<Book> book = bookRepository.findById(id);
+        return book.<ResponseEntity<?>>map(b -> new ResponseEntity<>(b, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/books/{id}")
+    public ResponseEntity<?> removeBook(@PathVariable("id") long id){
         bookRepository.deleteById(id);
-        return "redirect:books";
+        return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
     }
 
-    @PostMapping("/editbook")
-    public String editBook(@RequestParam("id") long id, Model model){
-
-        Book book = bookRepository.findById(id).orElse(null);
-        List<Author> authors = authorRepository.findAll();
-        List<Genre> genres = genreRepository.findAll();
-        model.addAttribute("book", book);
-        model.addAttribute("authors", authors);
-        model.addAttribute("genres", genres);
-        return "neweditbook";
+    @PutMapping(value="/books/{id}"
+            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> editBook(@PathVariable("id") long id,@RequestBody Book requestBody){
+        if (bookRepository.findById(id).isPresent()){
+            bookRepository.save(new Book(id
+                    , requestBody.getName()
+                    , requestBody.getAuthor()
+                    , requestBody.getGenre()));
+            return (new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK));
+        }else{
+            return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+        }
     }
 
-    @PostMapping("/savebook")
-    public String saveBook(@RequestParam("id") long id
-                          ,@RequestParam("name") String name
-                          ,@RequestParam("authorID") long authorID
-                          ,@RequestParam("genreID") long genreID
-    ){
-        Book book = authorRepository.findById(id).map(b -> new Book(b.getId()
-                , name
-                , authorRepository.findById(authorID).get()
-                , genreRepository.findById(genreID).get()))
-                .orElse(new Book(name
-                        , authorRepository.findById(authorID).get()
-                        , genreRepository.findById(genreID).get()));
-        bookRepository.save(book);
-        return "redirect:books";
+    @PostMapping(value="/books"
+            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> saveBook(@RequestBody Book requestBody){
+        bookRepository.save(new Book(requestBody.getId()
+                , requestBody.getName()
+                , requestBody.getAuthor()
+                , requestBody.getGenre()));
+        return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
     }
 
 }

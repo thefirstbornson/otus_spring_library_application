@@ -1,17 +1,17 @@
 package ru.otus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.otus.domain.Author;
 import ru.otus.repository.AuthorRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class AuthorController {
@@ -19,42 +19,50 @@ public class AuthorController {
 
     @Autowired
     public AuthorController(AuthorRepository authorRepository) {
-
         this.authorRepository = authorRepository;
     }
 
     @GetMapping("/authors")
-    public String getAllAuthors( Model model) {
+    public ResponseEntity<?> getAllAuthors() {
         List<Author> authors = authorRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
-        model.addAttribute("authors", authors);
-        return "authors";
-    }
-
-    @PostMapping("/removeauthor")
-    public String removeAuthor( @RequestParam("id") long id) {
-        try {
-            authorRepository.deleteById(id);
-        }catch (DataIntegrityViolationException e){
-            e.printStackTrace();
+        if (!authors.isEmpty()){
+            return new ResponseEntity<>(authors,HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND);
         }
-
-        return "redirect:authors";
     }
 
-    @PostMapping("/editauthor")
-    public String editAuthor(@RequestParam("id") long id, Model model){
-        Author author = authorRepository.findById(id).orElse(null);
-        model.addAttribute("author", author);
-        return "neweditauthor";
+    @GetMapping("/authors/{id}")
+    public ResponseEntity<?> getAuthor(@PathVariable("id") long id) {
+        Optional<Author> author = authorRepository.findById(id);
+        return author.<ResponseEntity<?>>map(author1 -> new ResponseEntity<>(author1, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/saveauthor")
-    public String saveAuthor(@RequestParam("id") long id
-                          ,@RequestParam("fname") String firstName
-                          ,@RequestParam("lname") String lastName
-    ){
-        Author author = authorRepository.findById(id).map(a -> new Author(a.getId(), firstName, lastName)).orElse(new Author(firstName, lastName));
-        authorRepository.save(author);
-        return "redirect:authors";
+    @DeleteMapping(value="/authors/{id}")
+    public ResponseEntity<?> removeAuthor(@PathVariable("id") long id){
+            authorRepository.deleteById(id);
+       return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
+    }
+
+    @PutMapping(value="/authors/{id}"
+            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> editAuthor(@PathVariable("id") long id, @RequestBody Author requestBody){
+        if (authorRepository.findById(id).isPresent()){
+            authorRepository.save(new Author(id, requestBody.getFirstName(), requestBody.getLastName()));
+            return (new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK));
+        }else{
+            return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @PostMapping(value="/authors"
+            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> saveAuthor(@RequestBody Author requestBody){
+        authorRepository.save(new Author( requestBody.getFirstName(), requestBody.getLastName()));
+        return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
     }
 }

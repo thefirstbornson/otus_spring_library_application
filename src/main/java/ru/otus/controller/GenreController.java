@@ -1,59 +1,67 @@
 package ru.otus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.otus.domain.Genre;
 import ru.otus.repository.GenreRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class GenreController {
     private final GenreRepository genreRepository;
-
     @Autowired
     public GenreController(GenreRepository genreRepository) {
-
         this.genreRepository = genreRepository;
     }
 
     @GetMapping("/genres")
-    public String getAllGenres( Model model) {
-        List<Genre> authors = genreRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
-        model.addAttribute("genres", authors);
-        return "genres";
-    }
-
-    @PostMapping("/removegenre")
-    public String removeGenre( @RequestParam("id") long id) {
-        try {
-            genreRepository.deleteById(id);
-        }catch (DataIntegrityViolationException e){
-            e.printStackTrace();
+    public ResponseEntity<?> getAllGenres() {
+        List<Genre> genres = genreRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
+        if (!genres.isEmpty()){
+            return new ResponseEntity<>(genres,HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND);
         }
-        return "redirect:genres";
     }
 
-    @PostMapping("/editgenre")
-    public String editGenre(@RequestParam("id") long id, Model model){
-        Genre genre = genreRepository.findById(id).orElse(null);
-        model.addAttribute("genre", genre);
-        return "neweditgenre";
+    @GetMapping("/genres/{id}")
+    public ResponseEntity<?> getGenre(@PathVariable("id") long id) {
+        Optional<Genre> genre = genreRepository.findById(id);
+        return genre.<ResponseEntity<?>>map(genre1 -> new ResponseEntity<>(genre1, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/savegenre")
-    public String saveGenre(@RequestParam("id") long id
-            ,@RequestParam("genrename") String genrename
+    @DeleteMapping(value="/genres/{id}")
+    public ResponseEntity<?> deleteGenre(@PathVariable("id") long id){
+        genreRepository.deleteById(id);
+        return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
+    }
 
-    ){
-        Genre genre = genreRepository.findById(id).map(g -> new Genre(g.getId(), genrename)).orElse(new  Genre(genrename));
-        genreRepository.save(genre);
-        return "redirect:genres";
+    @PutMapping(value="/genres/{id}"
+            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> editGenre(@PathVariable("id") long id,@RequestBody Genre requestBody){
+        if (genreRepository.findById(id).isPresent()){
+            genreRepository.save(new Genre(id,  requestBody.getGenreName()));
+            return (new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK));
+        }else{
+            return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @PostMapping(value="/genres"
+            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> saveGenre(@RequestBody Genre requestBody){
+        genreRepository.save(new Genre( requestBody.getGenreName()));
+        return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
     }
 }

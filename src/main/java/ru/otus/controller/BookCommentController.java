@@ -1,68 +1,71 @@
 package ru.otus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import ru.otus.domain.Book;
+import org.springframework.web.bind.annotation.*;
 import ru.otus.domain.BookComment;
 import ru.otus.repository.BookCommentRepository;
-import ru.otus.repository.BookRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class BookCommentController {
     private final BookCommentRepository bookCommentRepository;
-    private final BookRepository bookRepository;
 
     @Autowired
-    public BookCommentController(BookCommentRepository bookCommentRepository, BookRepository bookRepository) {
-
+    public BookCommentController(BookCommentRepository bookCommentRepository) {
         this.bookCommentRepository = bookCommentRepository;
-        this.bookRepository = bookRepository;
     }
 
     @GetMapping("/bookcomments")
-    public String getAllBookComments( Model model) {
+    public ResponseEntity<?> getAllBookComments() {
         List<BookComment> bookComments = bookCommentRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
-        model.addAttribute("bookcomments", bookComments);
-        return "bookcomments";
-    }
-
-    @PostMapping("/removebookcomment")
-    public String removebookcomment( @RequestParam("id") long id) {
-        try {
-            bookCommentRepository.deleteById(id);
-        }catch (DataIntegrityViolationException e){
-            e.printStackTrace();
+        if (!bookComments.isEmpty()){
+            return new ResponseEntity<>(bookComments,HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND);
         }
-
-        return "redirect:bookcomments";
     }
 
-    @PostMapping("/editbookcomment")
-    public String editbookcomment(@RequestParam("id") long id, Model model){
-        BookComment bookComment= bookCommentRepository.findById(id).orElse(null);
-        List<Book> books = bookRepository.findAll();
-        model.addAttribute("books", books);
-        model.addAttribute("bookcomment", bookComment);
-        return "neweditbookcomment";
+    @GetMapping("/bookcomments/{id}")
+    public ResponseEntity<?> getBookComment(@PathVariable("id") long id) {
+        Optional<BookComment> bookComment = bookCommentRepository.findById(id);
+        return bookComment.<ResponseEntity<?>>map(b -> new ResponseEntity<>(b, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/savebookcomment")
-    public String saveBookcomment(@RequestParam("id") long id
-                          ,@RequestParam("bookcomment") String bcomment
-                          ,@RequestParam("bookID") long bookID
-    ){
-        BookComment bookComment  = bookCommentRepository.findById(id).map(bc -> new BookComment(bc.getId(), bcomment, bookRepository.findById(bookID).get()))
-                                                                     .orElse(new BookComment(bcomment, bookRepository.findById(bookID).get()));
-        bookCommentRepository.save(bookComment);
+    @DeleteMapping("/bookcomments/{id}")
+    public ResponseEntity<?> removeBookComment(@PathVariable("id") long id){
+        bookCommentRepository.deleteById(id);
+        return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
+    }
 
-        return "redirect:bookcomments";
+    @PutMapping(value="/bookcomments/{id}"
+            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> editBookComment(@PathVariable("id") long id,@RequestBody BookComment requestBody){
+        if (bookCommentRepository.findById(id).isPresent()){
+            bookCommentRepository.save(new BookComment(id
+                                                        ,requestBody.getComment()
+                                                        ,requestBody.getBook()));
+            return (new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK));
+        }else{
+            return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @PostMapping(value="/bookcomments"
+            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> saveBookComment(@RequestBody BookComment requestBody){
+        bookCommentRepository.save(new BookComment(requestBody.getId()
+                , requestBody.getComment()
+                ,requestBody.getBook()));
+        return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
     }
 }
