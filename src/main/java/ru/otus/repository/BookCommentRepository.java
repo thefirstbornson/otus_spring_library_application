@@ -1,7 +1,7 @@
 package ru.otus.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import ru.otus.domain.BookComment;
 
-public interface BookCommentRepository extends JpaRepository<BookComment, Long> {
+public interface BookCommentRepository extends ReactiveMongoRepository<BookComment, String> {
 }

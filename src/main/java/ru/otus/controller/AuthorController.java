@@ -1,68 +1,24 @@
 package ru.otus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import ru.otus.domain.Author;
-import ru.otus.repository.AuthorRepository;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import ru.otus.controller.dto.AuthorDto;
+import ru.otus.repository.BookRepository;
 
-import java.util.List;
-import java.util.Optional;
-
-@Controller
+@RestController
 public class AuthorController {
-    private final AuthorRepository authorRepository;
+
+    private final BookRepository bookRepository;
 
     @Autowired
-    public AuthorController(AuthorRepository authorRepository) {
-        this.authorRepository = authorRepository;
+    public AuthorController( BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
     @GetMapping("/authors")
-    public ResponseEntity<?> getAllAuthors() {
-        List<Author> authors = authorRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
-        if (!authors.isEmpty()){
-            return new ResponseEntity<>(authors,HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @GetMapping("/authors/{id}")
-    public ResponseEntity<?> getAuthor(@PathVariable("id") long id) {
-        Optional<Author> author = authorRepository.findById(id);
-        return author.<ResponseEntity<?>>map(author1 -> new ResponseEntity<>(author1, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND));
-    }
-
-    @DeleteMapping(value="/authors/{id}")
-    public ResponseEntity<?> removeAuthor(@PathVariable("id") long id){
-            authorRepository.deleteById(id);
-       return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
-    }
-
-    @PutMapping(value="/authors/{id}"
-            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
-            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> editAuthor(@PathVariable("id") long id, @RequestBody Author requestBody){
-        if (authorRepository.findById(id).isPresent()){
-            authorRepository.save(new Author(id, requestBody.getFirstName(), requestBody.getLastName()));
-            return (new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK));
-        }else{
-            return new ResponseEntity<>( HttpStatus.NO_CONTENT);
-        }
-    }
-
-    @PostMapping(value="/authors"
-            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
-            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseBody
-    public ResponseEntity<?> saveAuthor(@RequestBody Author requestBody){
-        authorRepository.save(new Author( requestBody.getFirstName(), requestBody.getLastName()));
-        return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
+    public Flux<AuthorDto> getAllAuthors() {
+        return bookRepository.findAll().map(book -> AuthorDto.toDto(book.getAuthor())).distinct();
     }
 }

@@ -1,71 +1,71 @@
 package ru.otus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import ru.otus.controller.dto.BookCommentDto;
 import ru.otus.domain.BookComment;
 import ru.otus.repository.BookCommentRepository;
+import ru.otus.repository.BookRepository;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
-@Controller
+@RestController
 public class BookCommentController {
     private final BookCommentRepository bookCommentRepository;
+    private final BookRepository bookRepository;
 
     @Autowired
-    public BookCommentController(BookCommentRepository bookCommentRepository) {
+    public BookCommentController(BookCommentRepository bookCommentRepository, BookRepository bookRepository) {
         this.bookCommentRepository = bookCommentRepository;
+        this.bookRepository = bookRepository;
     }
 
     @GetMapping("/bookcomments")
-    public ResponseEntity<?> getAllBookComments() {
-        List<BookComment> bookComments = bookCommentRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
-        if (!bookComments.isEmpty()){
-            return new ResponseEntity<>(bookComments,HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND);
-        }
+    public Flux<BookCommentDto> getAllBookComments() {
+        return bookCommentRepository.findAll().map(bookComment ->
+                BookCommentDto.toDto(bookComment.getId(), bookComment.getComment()
+                        ,Objects.requireNonNull(bookRepository.findById(bookComment.getBookid())
+                                .block())
+                                .getName()
+        ));
     }
 
     @GetMapping("/bookcomments/{id}")
-    public ResponseEntity<?> getBookComment(@PathVariable("id") long id) {
-        Optional<BookComment> bookComment = bookCommentRepository.findById(id);
-        return bookComment.<ResponseEntity<?>>map(b -> new ResponseEntity<>(b, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND));
+    public Mono<ResponseEntity<BookComment>> getBookComment(@PathVariable("id") String id) {
+        return bookCommentRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+
     }
 
     @DeleteMapping("/bookcomments/{id}")
-    public ResponseEntity<?> removeBookComment(@PathVariable("id") long id){
-        bookCommentRepository.deleteById(id);
-        return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
+    public Mono<ResponseEntity<Void>> removeBookComment(@PathVariable("id") String id){
+        return bookCommentRepository.findById(id)
+                .flatMap(existingComment ->
+                        bookCommentRepository.delete(existingComment)
+                                .then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK)))
+                )
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PutMapping(value="/bookcomments/{id}"
-            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
-            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> editBookComment(@PathVariable("id") long id,@RequestBody BookComment requestBody){
-        if (bookCommentRepository.findById(id).isPresent()){
-            bookCommentRepository.save(new BookComment(id
-                                                        ,requestBody.getComment()
-                                                        ,requestBody.getBook()));
-            return (new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK));
-        }else{
-            return new ResponseEntity<>( HttpStatus.NO_CONTENT);
-        }
+    @PutMapping(value="/bookcomments/{id}")
+    public Mono<ResponseEntity<BookComment>> editBookComment(@PathVariable("id") String id, @RequestBody BookComment requestBody){
+        return bookCommentRepository.findById(id).flatMap(comment -> {
+            comment.setComment(requestBody.getComment());
+            comment.setBookid(requestBody.getBookid());
+            return bookCommentRepository.save(comment);
+        })
+                .map(bookComment -> new ResponseEntity<>(bookComment, HttpStatus.OK))
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping(value="/bookcomments"
-            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
-            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> saveBookComment(@RequestBody BookComment requestBody){
-        bookCommentRepository.save(new BookComment(requestBody.getId()
-                , requestBody.getComment()
-                ,requestBody.getBook()));
-        return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
+    @PostMapping(value="/bookcomments")
+    public Mono<BookComment> saveBookComment(@RequestBody BookComment requestBody){
+        return bookCommentRepository.save(requestBody);
     }
+
 }

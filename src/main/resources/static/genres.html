@@ -58,17 +58,12 @@
                                                     <table class="genres" id="genres-table"  align="center">
                                                         <thead>
                                                         <tr>
-                                                            <th>ID</th>
                                                             <th>Genre name</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
                                                         <tr v-for="genre in genres">
-                                                            <td>{{ genre.id }}</td>
-                                                            <td>{{ genre.genreName }}</td>
-                                                            <td>
-                                                                <button name="delete" class="destroy"  v-on:click="f_delete(genre.id)">del</button>
-                                                            </td>
+                                                            <td>{{ genre.genre}}</td>
                                                         </tr>
                                                         </tbody>
                                                     </table>

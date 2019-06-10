@@ -57,19 +57,12 @@
                                                     <table class="authors" id="authors-table"  align="center">
                                                         <thead>
                                                         <tr>
-                                                            <th>ID</th>
-                                                            <th>First name</th>
-                                                            <th>Last Name</th>
+                                                            <th>Name</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
                                                         <tr v-for="author in authors">
-                                                            <td>{{ author.id }}</td>
-                                                            <td>{{ author.firstName }}</td>
-                                                            <td>{{ author.lastName }}</td>
-                                                            <td>
-                                                                    <button name="delete" class="destroy"  v-on:click="f_delete(author.id)">del</button>
-                                                            </td>
+                                                            <td>{{ author.author }} </td>
                                                         </tr>
                                                         </tbody>
                                                 </table>

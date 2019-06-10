@@ -1,16 +1,13 @@
 package ru.otus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.domain.Book;
 import ru.otus.repository.BookRepository;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class BookController {
@@ -23,52 +20,43 @@ public class BookController {
     }
 
     @GetMapping("/books")
-    public ResponseEntity<?> getAllBooks() {
-        List<Book> books = bookRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
-        if (!books.isEmpty()){
-            return new ResponseEntity<>(books,HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND);
-        }
+    public Flux<Book> getAllBooks() {
+        return bookRepository.findAll();
     }
 
     @GetMapping("/books/{id}")
-    public ResponseEntity<?> getBook(@PathVariable("id") long id) {
-        Optional<Book> book = bookRepository.findById(id);
-        return book.<ResponseEntity<?>>map(b -> new ResponseEntity<>(b, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>("{\"status\":\"not found\"}", HttpStatus.NOT_FOUND));
+    public Mono<ResponseEntity<Book>> getBook(@PathVariable("id") String id) {
+        return bookRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+
     }
 
     @DeleteMapping("/books/{id}")
-    public ResponseEntity<?> removeBook(@PathVariable("id") long id){
-        bookRepository.deleteById(id);
-        return new ResponseEntity<>("{\"status\":\"deleted\"}", HttpStatus.OK);
+    public Mono<ResponseEntity<Void>> removeBook(@PathVariable("id") String id){
+        return bookRepository.findById(id)
+                .flatMap(existingBook ->
+                        bookRepository.delete(existingBook)
+                                .then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK)))
+                )
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PutMapping(value="/books/{id}"
-            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
-            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> editBook(@PathVariable("id") long id,@RequestBody Book requestBody){
-        if (bookRepository.findById(id).isPresent()){
-            bookRepository.save(new Book(id
-                    , requestBody.getName()
-                    , requestBody.getAuthor()
-                    , requestBody.getGenre()));
-            return (new ResponseEntity<>("{\"status\":\"updated\"}", HttpStatus.OK));
-        }else{
-            return new ResponseEntity<>( HttpStatus.NO_CONTENT);
-        }
+    @PutMapping(value="/books/{id}")
+    public Mono<ResponseEntity<Book>> editBook(@PathVariable("id") String id, @RequestBody Book requestBody){
+        return bookRepository.findById(id).flatMap(book -> {
+            book.setName(requestBody.getName());
+            book.setAuthor(requestBody.getAuthor());
+            book.setGenre(requestBody.getGenre());
+            return bookRepository.save(book);
+        })
+                .map(updateBook -> new ResponseEntity<>(updateBook, HttpStatus.OK))
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping(value="/books"
-            , consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
-            , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> saveBook(@RequestBody Book requestBody){
-        bookRepository.save(new Book(requestBody.getId()
-                , requestBody.getName()
-                , requestBody.getAuthor()
-                , requestBody.getGenre()));
-        return new ResponseEntity<>("{\"status\":\"saved\"}", HttpStatus.CREATED);
+    @PostMapping(value="/books")
+    public Mono<Book> saveBook(@RequestBody Book requestBody){
+        return bookRepository.save(requestBody);
     }
 
 }
