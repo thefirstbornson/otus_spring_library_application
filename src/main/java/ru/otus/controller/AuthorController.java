@@ -1,24 +1,27 @@
 package ru.otus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import ru.otus.controller.dto.AuthorDto;
+import ru.otus.repository.AuthorRepository;
 import ru.otus.repository.BookRepository;
 
 @RestController
 public class AuthorController {
 
-    private final BookRepository bookRepository;
+    private final AuthorRepository authorRepository;
+
 
     @Autowired
-    public AuthorController( BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
+    public AuthorController( AuthorRepository authorRepository) {
+        this.authorRepository = authorRepository;
     }
 
     @GetMapping("/authors")
     public Flux<AuthorDto> getAllAuthors() {
-        return bookRepository.findAll().map(book -> AuthorDto.toDto(book.getAuthor())).distinct();
+        return authorRepository.findAll();
     }
 }

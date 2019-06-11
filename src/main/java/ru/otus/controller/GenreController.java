@@ -6,18 +6,19 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import ru.otus.controller.dto.GenreDto;
 import ru.otus.repository.BookRepository;
+import ru.otus.repository.GenreRepository;
 
 @RestController
 public class GenreController {
-    private final BookRepository bookRepository;
+    private final GenreRepository genreRepository;
 
     @Autowired
-    public GenreController(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
+    public GenreController(GenreRepository genreRepository) {
+        this.genreRepository = genreRepository;
+           }
 
     @GetMapping("/genres")
     public Flux<GenreDto> getAllGenres() {
-        return bookRepository.findAll().map(book -> GenreDto.toDto(book.getGenre())).distinct();
+        return genreRepository.findAll();
     }
 }
