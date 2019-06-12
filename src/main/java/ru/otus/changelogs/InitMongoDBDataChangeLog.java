@@ -50,8 +50,4 @@ public class InitMongoDBDataChangeLog {
         );
     }
 
-    @ChangeSet(order = "002", id = "initComments", author = "artem", runAlways = true)
-    public void initComments(MongoTemplate template){
-        template.save(new BookComment("Great novel!",book.getId()));
-    }
 }

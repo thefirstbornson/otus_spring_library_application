@@ -3,5 +3,3 @@ spring:
     mongodb:
       port: 0
       database: test
-  main:
-    allow-bean-definition-overriding: true
