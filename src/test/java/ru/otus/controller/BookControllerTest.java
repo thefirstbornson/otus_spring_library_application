@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(BookController.class)
+@WebMvcTest(value = BookController.class, secure = false)
 class BookControllerTest {
 
     @Autowired

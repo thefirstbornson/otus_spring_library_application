@@ -53,3 +53,15 @@ insert into book_comment (COMMENT, BOOK_ID) values ('Great novel!',8);
 insert into book_comment (COMMENT, BOOK_ID) values ('The worst book I ever read',8);
 insert into book_comment (COMMENT, BOOK_ID) values ('The movie is better',8);
 insert into book_comment (COMMENT, BOOK_ID) values ('Interesting ending',8);
+
+insert into App_User (USER_NAME, ENCRYPTED_PASSWORD, ENABLED)
+    values ('admin', '$2a$10$6l5wO2mm4VqJ6Jop8rw9ZufXrD9/K/iWSjXGKQKXCPuhCIB5byesu', 1);
+insert into App_User ( USER_NAME, ENCRYPTED_PASSWORD, ENABLED)
+values ('editor', '$2a$10$HtEQXnCWduKMQYjtv3/NyeScR2JfU8ZZStlzpDPRmwbvt2KkSR7BC', 1);
+
+insert into app_role (ROLE_NAME)values ('ROLE_ADMIN');
+insert into app_role (ROLE_NAME)values ('ROLE_EDITOR');
+
+insert into user_role (ID, USER_ID, ROLE_ID)values (1, 1, 1);
+insert into user_role (ID, USER_ID, ROLE_ID)values (2, 1, 2);
+insert into user_role (ID, USER_ID, ROLE_ID)values (3, 2, 2);

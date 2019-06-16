@@ -5,20 +5,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "genre")
-public class Genre {
+@Table(name = "app_role")
+public class AppRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @Column(name = "name")
-    private String genreName;
-
-    public Genre(String genreName) {
-        this.genreName = genreName;
-    }
+    @Column(name = "role_id")
+    private long Id;
+    @Column(name = "role_name")
+    private String name;
+    @ManyToMany(mappedBy = "roles")
+    private List< AppUser > users;
 }

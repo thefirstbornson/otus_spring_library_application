@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(GenreController.class)
+@WebMvcTest(value = GenreController.class, secure = false)
 class GenreControllerTest {
     @Autowired
     private MockMvc mvc;

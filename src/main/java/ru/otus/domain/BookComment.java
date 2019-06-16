@@ -1,7 +1,14 @@
 package ru.otus.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="book_comment")
 public class BookComment{
@@ -14,49 +21,8 @@ public class BookComment{
     @JoinColumn(name="book_id")
     private Book book;
 
-    public BookComment() {
-    }
-
     public BookComment(String comment, Book book) {
         this.comment = comment;
-        this.book = book;
-    }
-
-    public BookComment(long id,String comment, Book book) {
-        this.id = id;
-        this.comment = comment;
-        this.book = book;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return "BookComment{" +
-                "id=" + id +
-                ", comment='" + comment + '\'' +
-                '}';
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
         this.book = book;
     }
 }

@@ -57,4 +57,19 @@ public class AuthorController {
         authorRepository.save(author);
         return "redirect:authors";
     }
+
+    @PostMapping("/success")
+    public String successPage() {
+        return "success";
+    }
+
+    @PostMapping("/failure")
+    public String failurePage() {
+        return "failure";
+    }
+
+    @GetMapping("/403")
+    public String error403() {
+        return "403";
+    }
 }

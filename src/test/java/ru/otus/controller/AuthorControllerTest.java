@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(AuthorController.class)
+@WebMvcTest(value = {AuthorController.class}, secure = false)
 class AuthorControllerTest {
 
     private static final String NAME1 = "Fedor";
