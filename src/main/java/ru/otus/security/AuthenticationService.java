@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.domain.AppUser;
-import ru.otus.exception.NoEntityException;
 import ru.otus.repository.UserRepository;
 
 import java.util.Optional;
@@ -30,8 +29,9 @@ public class AuthenticationService implements UserDetailsService {
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         AppUser appUser=null;
         try {
-            appUser = Optional.of(userRepository.findUserByName(s)).orElseThrow(NoEntityException::new);
-        } catch (NoEntityException e) {
+            appUser = Optional.of(userRepository.findUserByName(s))
+                    .orElseThrow( () -> new UsernameNotFoundException("No user found with username " + s));
+        } catch ( UsernameNotFoundException e) {
             log.error("No such user exists");
             e.printStackTrace();
         }
