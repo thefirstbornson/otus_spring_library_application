@@ -33,18 +33,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                    .antMatchers("/books", "/authors","/genres","/bookcomments").authenticated()
+                    .antMatchers("/books", "/authors","/genres","/bookcomments").hasAnyRole("VIEWER")
                     .antMatchers("/editbook","/savebook","/removebook"
                             ,"/editauthor","/saveauthor","/removeauthor"
                             ,"/editgenre","/savegenre","/removegenre"
                             ,"/editbookcomment","/savebookcomment","/removebookcomment").hasAnyRole("ADMIN")
                     .antMatchers("/editbook","/editauthor","/editgenre","/editbookcomment"
                             ,"/savebook","/saveauthor","/savegenre", "/savebookcomment").hasAnyRole("EDITOR")
+
                     .anyRequest().authenticated()
                 .and()
                 .formLogin()
-//                    .successForwardUrl("/success")
-//                    .failureForwardUrl("/failure")
                     .permitAll()
                 .and()
                 .logout()
