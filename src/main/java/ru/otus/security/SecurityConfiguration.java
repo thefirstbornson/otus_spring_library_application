@@ -33,7 +33,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                    .antMatchers("/books", "/authors","/genres","/bookcomments").permitAll()
+                    .antMatchers("/books", "/authors","/genres","/bookcomments").authenticated()
                     .antMatchers("/editbook","/savebook","/removebook"
                             ,"/editauthor","/saveauthor","/removeauthor"
                             ,"/editgenre","/savegenre","/removegenre"
@@ -43,8 +43,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                    .successForwardUrl("/success")
-                    .failureForwardUrl("/failure")
+//                    .successForwardUrl("/success")
+//                    .failureForwardUrl("/failure")
                     .permitAll()
                 .and()
                 .logout()
