@@ -1,8 +1,13 @@
 package ru.otus.repository;
 
-import reactor.core.publisher.Flux;
-import ru.otus.controller.dto.AuthorDto;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.stereotype.Repository;
+import ru.otus.domain.Author;
+import ru.otus.domain.Genre;
 
-public interface AuthorRepository {
-    Flux<AuthorDto> findAll();
+import java.util.List;
+
+@Repository
+public interface AuthorRepository extends JpaRepository<Author, Long> {
 }

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <title>Otus</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+
+    <style type="text/css">
+        html, body { height:100%; margin:0px; padding:0px; }
+    </style>
+
+</head>
+<body>
+<table border="0" style="width:100%; height:100%;">
+    <tbody>
+    <tr>
+        <td style="vertical-align: top;" >
+            <table border="0" width="100%" cellspacing="0" cellpadding="0" >
+                <tbody>
+                <tr>
+                    <td align="center" ><img th:src="@{otus.jpg}"  src="../static/otus.jpg"  alt="" width="137" height="61" /></td>
+                </tr>
+                <tr bgcolor="#ffcc00">
+                    <td height="31" align="center">
+                        <a  href="\">Library</a>
+                    </td>
+                </tr>
+                <tr bgcolor="#ffcc00">
+                    <td align="center">
+                        <a  href="\login">Log in</a>
+                        <a  href="\logout">Log out</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" height="100%">
+                        <table width="100%">
+                            <tbody>
+                            <tr>
+                                <td valign="top">
+                                    <table width="100%" >
+                                        <tbody>
+                                        <tr>
+                                            <td valign="top">
+                                                <table style="margin-top: 100px;" align="center" >
+                                                    <tbody>
+                                                    <tr>
+                                                        <th align="left">
+                                                            <a  href="\books">Books</a>
+                                                        </th>
+                                                        <th align="left">
+                                                            <a  href="\authors">Authors</a>
+                                                        </th>
+                                                        <th align="left">
+                                                            <a  href="\genres">Genres</a>
+                                                        </th>
+                                                        <th align="left">
+                                                            <a  href="\bookcomments">Book comments</a>
+                                                        </th>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                                    <table  align="center">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>Genre name</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr th:each="genre : ${genres}">
+                                                            <td th:text="${genre.id}">id</td>
+                                                            <td th:text="${genre.genreName}">genre name</td>
+                                                            <td>
+                                                                <form  th:action="@{/editgenre}" th:method="post" action="neweditgenre.html">
+                                                                    <button th:value="${genre.id}" value="id" name="id" type="submit">edit</button>
+                                                                </form>
+                                                            <td>
+                                                            <form  th:action="@{/removegenre}" th:method="post" action="/removegenre">
+                                                                <button th:value="${genre.id}" value="id" name="id" type="submit">delete</button>
+                                                            </form>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                            </td>
+                                        <tr>
+                                            <td align="center">
+                                                <form  th:action="@{/editgenre}" th:method="post" action="neweditgenre.html">
+                                                    <button  value="0" name="id" type="submit" >new genre</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+    </tr>
+    <tr bgcolor="#ffcc00">
+        <td align="right" height="45">&nbsp;</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

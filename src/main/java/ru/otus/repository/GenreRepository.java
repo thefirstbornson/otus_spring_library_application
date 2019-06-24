@@ -1,9 +1,10 @@
 package ru.otus.repository;
 
-import reactor.core.publisher.Flux;
-import ru.otus.controller.dto.AuthorDto;
-import ru.otus.controller.dto.GenreDto;
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.otus.domain.Author;
+import ru.otus.domain.Genre;
 
-public interface GenreRepository {
-    Flux<GenreDto> findAll();
+import java.util.List;
+
+public interface GenreRepository extends JpaRepository<Genre,Long> {
 }

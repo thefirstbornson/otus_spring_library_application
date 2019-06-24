@@ -3,26 +3,31 @@ package ru.otus.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "book")
+@Entity
+@Table(name = "book")
+@NamedEntityGraph(name = "bookGraph", includeAllAttributes = true)
 public class Book {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(name = "name")
     private String name;
-    private String author;
-    private String genre;
-    private String literaryForm;
+    @ManyToOne
+    @JoinColumn(name="author_id")
+    private Author author;
+    @ManyToOne
+    @JoinColumn(name = "genre_id")
+    private Genre genre;
 
-    public Book(String name, String author, String genre, String literaryForm) {
+    public Book(String name, Author author, Genre genre) {
         this.name = name;
         this.author = author;
         this.genre = genre;
-        this.literaryForm = literaryForm;
     }
 }
