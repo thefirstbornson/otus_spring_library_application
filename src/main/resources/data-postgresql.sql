@@ -58,10 +58,16 @@ insert into App_User (USER_NAME, ENCRYPTED_PASSWORD, ENABLED)
     values ('admin', '$2a$10$6l5wO2mm4VqJ6Jop8rw9ZufXrD9/K/iWSjXGKQKXCPuhCIB5byesu', 1);
 insert into App_User ( USER_NAME, ENCRYPTED_PASSWORD, ENABLED)
 values ('editor', '$2a$10$HtEQXnCWduKMQYjtv3/NyeScR2JfU8ZZStlzpDPRmwbvt2KkSR7BC', 1);
+insert into App_User ( USER_NAME, ENCRYPTED_PASSWORD, ENABLED)
+values ('viewer', '$2a$10$hye94yK7KRO5FlpHO14k1uFf/QAK0J8JzP2UNbVrR4t6n.AkiCH36', 1);
 
 insert into app_role (ROLE_NAME)values ('ROLE_ADMIN');
 insert into app_role (ROLE_NAME)values ('ROLE_EDITOR');
+insert into app_role (ROLE_NAME)values ('ROLE_VIEWER');
 
 insert into user_role (ID, USER_ID, ROLE_ID)values (1, 1, 1);
 insert into user_role (ID, USER_ID, ROLE_ID)values (2, 1, 2);
-insert into user_role (ID, USER_ID, ROLE_ID)values (3, 2, 2);
+insert into user_role (ID, USER_ID, ROLE_ID)values (3, 1, 3);
+insert into user_role (ID, USER_ID, ROLE_ID)values (4, 2, 2);
+insert into user_role (ID, USER_ID, ROLE_ID)values (5, 2, 3);
+insert into user_role (ID, USER_ID, ROLE_ID)values (6, 3, 3);
