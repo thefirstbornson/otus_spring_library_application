@@ -14,16 +14,12 @@ import org.springframework.batch.item.data.MongoItemWriter;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.builder.MongoItemWriterBuilder;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
-import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
-import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,15 +61,6 @@ public class BatchConfig extends DefaultBatchConfigurer {
     @Autowired
     public void setDataSource(@Qualifier("springBatchDataSource") DataSource dataSource) {
         super.setDataSource(dataSource);
-    }
-
-    @Bean
-    public FlatFileItemWriter writer() {
-        return new FlatFileItemWriterBuilder<>()
-                .name("genreItemWriter")
-                .resource(new FileSystemResource("output/output1.csv"))
-                .lineAggregator(new DelimitedLineAggregator<>())
-                .build();
     }
 
     @Bean
@@ -125,11 +112,11 @@ public class BatchConfig extends DefaultBatchConfigurer {
         };
     }
     @Bean
-    public Job LibraryJob(Step step1, Step step2) {
+    public Job LibraryJob(Step moveBooksFromPostgresToMongo, Step moveBookCommentsFromPostgresToMongo) {
         return jobBuilderFactory.get("importLibraryJob")
                 .incrementer(new RunIdIncrementer())
-                .flow(step1)
-                .next(step2)
+                .flow(moveBooksFromPostgresToMongo)
+                .next(moveBookCommentsFromPostgresToMongo)
                 .end()
                 .listener(new JobExecutionListener() {
                     @Override
@@ -146,27 +133,27 @@ public class BatchConfig extends DefaultBatchConfigurer {
     }
 
     @Bean
-    public Step step1(MongoItemWriter<BookDoc> writer, RepositoryItemReader<Book> reader
-            , @Qualifier("bookDocItemProcessor") ItemProcessor itemProcessor) {
-        return stepBuilderFactory.get("step1")
-                .chunk(5)
+    public Step moveBooksFromPostgresToMongo(MongoItemWriter<BookDoc> writer, RepositoryItemReader<Book> reader
+            , @Qualifier("bookDocItemProcessor") ItemProcessor<Book, BookDoc> itemProcessor) {
+        return stepBuilderFactory.get("moveBooksFromPostgresToMongo")
+                .<Book, BookDoc>chunk(5)
                 .reader(reader)
                 .processor(itemProcessor)
                 .writer(writer)
-                .listener(new ItemReadListener() {
+                .listener(new ItemReadListener<Book>() {
                     public void beforeRead() { logger.info("Начало чтения"); }
-                    public void afterRead(Object o) { logger.info("Конец чтения"); }
+                    public void afterRead(Book o) { logger.info("Конец чтения"); }
                     public void onReadError(Exception e) { logger.info("Ошибка чтения"); }
                 })
-                .listener(new ItemWriteListener() {
+                .listener(new ItemWriteListener<BookDoc>(){
                     public void beforeWrite(List list) { logger.info("Начало записи"); }
                     public void afterWrite(List list) { logger.info("Конец записи"); }
                     public void onWriteError(Exception e, List list) { logger.info("Ошибка записи"); }
                 })
-                .listener(new ItemProcessListener() {
-                    public void beforeProcess(Object o) {logger.info("Начало обработки");}
-                    public void afterProcess(Object o, Object o2) {logger.info("Конец обработки");}
-                    public void onProcessError(Object o, Exception e) {logger.info("Ошбка обработки");}
+                .listener(new ItemProcessListener<Book, BookDoc>() {
+                    public void beforeProcess(Book o) {logger.info("Начало обработки");}
+                    public void afterProcess(Book o, BookDoc o2) {logger.info("Конец обработки");}
+                    public void onProcessError(Book o, Exception e) {logger.info("Ошбка обработки");}
                 })
                 .listener(new ChunkListener() {
                     public void beforeChunk(ChunkContext chunkContext) {logger.info("Начало пачки");}
@@ -176,27 +163,28 @@ public class BatchConfig extends DefaultBatchConfigurer {
                 .build();
     }
     @Bean
-    public Step step2(MongoItemWriter<BookCommentDoc> writer
-            , RepositoryItemReader<BookComment> reader, @Qualifier("bookCommentDocItemProcessor") ItemProcessor processor) {
-        return stepBuilderFactory.get("step2")
-                .chunk(5)
+    public Step moveBookCommentsFromPostgresToMongo(MongoItemWriter<BookCommentDoc> writer
+            , RepositoryItemReader<BookComment> reader
+            , @Qualifier("bookCommentDocItemProcessor") ItemProcessor<BookComment, BookCommentDoc> processor) {
+        return stepBuilderFactory.get("moveBookCommentsFromPostgresToMongo")
+                .<BookComment, BookCommentDoc>chunk(5)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
-                .listener(new ItemReadListener() {
+                .listener(new ItemReadListener<BookComment>() {
                     public void beforeRead() { logger.info("Начало чтения"); }
-                    public void afterRead(Object o) { logger.info("Конец чтения"); }
+                    public void afterRead(BookComment o) { logger.info("Конец чтения"); }
                     public void onReadError(Exception e) { logger.info("Ошибка чтения"); }
                 })
-                .listener(new ItemWriteListener() {
+                .listener(new ItemWriteListener<BookCommentDoc>() {
                     public void beforeWrite(List list) { logger.info("Начало записи"); }
                     public void afterWrite(List list) { logger.info("Конец записи"); }
                     public void onWriteError(Exception e, List list) { logger.info("Ошибка записи"); }
                 })
-                .listener(new ItemProcessListener() {
-                    public void beforeProcess(Object o) {logger.info("Начало обработки");}
-                    public void afterProcess(Object o, Object o2) {logger.info("Конец обработки");}
-                    public void onProcessError(Object o, Exception e) {logger.info("Ошбка обработки");}
+                .listener(new ItemProcessListener<BookComment, BookCommentDoc>() {
+                    public void beforeProcess(BookComment o) {logger.info("Начало обработки");}
+                    public void afterProcess(BookComment o, BookCommentDoc  o2) {logger.info("Конец обработки");}
+                    public void onProcessError(BookComment o, Exception e) {logger.info("Ошбка обработки");}
                 })
                 .listener(new ChunkListener() {
                     public void beforeChunk(ChunkContext chunkContext) {logger.info("Начало пачки");}
