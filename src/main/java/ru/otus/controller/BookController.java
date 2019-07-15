@@ -2,11 +2,15 @@ package ru.otus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.integration.channel.QueueChannel;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.otus.config.SadFilter;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
@@ -21,19 +25,27 @@ public class BookController {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
+    private final QueueChannel bookDramaChannel;
+    private final SadFilter sadFilter;
 
     @Autowired
-    public BookController(BookRepository bookRepository1, AuthorRepository authorRepository, GenreRepository genreRepository) {
+    public BookController(BookRepository bookRepository1, AuthorRepository authorRepository
+            , GenreRepository genreRepository, QueueChannel bookDramaChannel, SadFilter sadFilter) {
 
         this.bookRepository = bookRepository1;
         this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
+        this.bookDramaChannel = bookDramaChannel;
+        this.sadFilter = sadFilter;
     }
 
     @GetMapping("/books")
     public String getAllBooks( Model model) {
         List<Book> books = bookRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
-        model.addAttribute("books", books);
+        //bookDramaChannel.send(books);
+        sadFilter.bookDrama(books);
+        Message<?> outMessage = bookDramaChannel.receive(0);
+        model.addAttribute("books", outMessage.getPayload());
         return "books";
     }
 
