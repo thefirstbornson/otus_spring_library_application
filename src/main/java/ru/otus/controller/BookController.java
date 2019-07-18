@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.otus.config.IntegrationConfig;
+import ru.otus.config.UpperCaseBook;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
@@ -22,11 +22,11 @@ public class BookController {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
-    private final IntegrationConfig.UpperCaseBook upperCaseBook;
+    private final UpperCaseBook upperCaseBook;
 
     @Autowired
     public BookController(BookRepository bookRepository1, AuthorRepository authorRepository
-            , GenreRepository genreRepository, IntegrationConfig.UpperCaseBook upperCaseBook) {
+            , GenreRepository genreRepository, UpperCaseBook upperCaseBook) {
 
         this.bookRepository = bookRepository1;
         this.authorRepository = authorRepository;
