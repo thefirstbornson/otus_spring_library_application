@@ -26,7 +26,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/");
+        web.ignoring().antMatchers("/","/info","/actuator/**");
     }
 
     @Override
@@ -40,7 +40,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                             ,"/editbookcomment","/savebookcomment","/removebookcomment").hasAnyRole("ADMIN")
                     .antMatchers("/editbook","/editauthor","/editgenre","/editbookcomment"
                             ,"/savebook","/saveauthor","/savegenre", "/savebookcomment").hasAnyRole("EDITOR")
-
                     .anyRequest().authenticated()
                 .and()
                 .formLogin()
