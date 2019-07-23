@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres_db:5432/librarydb
+    username: postgres
+    password: 123
+    platform: postgresql
+    initialization-mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: false
+        temp:
+          use_jdbc_metadata_defaults : false
+    hibernate:
+      ddl-auto: none

@@ -14,6 +14,7 @@ import ru.otus.domain.Genre;
 import ru.otus.repository.GenreRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,9 +42,9 @@ class GenreControllerTest {
     void setUp() {
         genre = new Genre(1,"Horror");
         genres = new ArrayList<>(
-                List.of(new Genre(2,"Horror")
-                        ,new Genre(3, "Fantasy")
-                        ,new Genre(4,"Tragedy")));
+                Arrays.asList(new Genre(2, "Horror")
+                        , new Genre(3, "Fantasy")
+                        , new Genre(4, "Tragedy")));
 
 
     }
