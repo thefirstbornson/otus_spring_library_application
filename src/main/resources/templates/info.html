@@ -19,12 +19,10 @@
             <table border="0" width="100%" cellspacing="0" cellpadding="0" >
                 <tbody>
                 <tr>
-                    <td align="center" >
-                        <img th:src="@{otus.jpg}"  src="../static/otus.jpg"  alt="" width="137" height="61" />
-                    </td>
+                    <td align="center" ><img th:src="@{otus.jpg}"  src="../static/otus.jpg"  alt="" width="137" height="61" /></td>
                 </tr>
-                <tr height="31" bgcolor="#ffcc00">
-                    <td align="center">
+                <tr bgcolor="#ffcc00">
+                    <td height="31" align="center">
                         <a  href="\">Library</a>
                     </td>
                 </tr>
@@ -33,6 +31,7 @@
                         <a  href="\login">Log in</a>
                         <a  href="\logout">Log out</a>
                         <a  href="\info">Info</a>
+
                     </td>
                 </tr>
                 <tr>
@@ -41,27 +40,26 @@
                             <tbody>
                             <tr>
                                 <td valign="top">
-                                    <table width="100%" >
+                                    <table width="100%">
                                         <tbody>
                                         <tr>
                                             <td valign="top">
-                                                <table style="margin-top: 100px;" align="center" >
-                                                    <tbody>
+                                                <table style="margin-top: 100px;" align="center">
+                                                </table>
+                                                <table align="center" border="1" style="width:40%; height:30%;border-collapse: collapse;" >
+                                                    <thead>
                                                     <tr>
-                                                        <th align="left">
-                                                            <a  href="\books">Books</a>
-                                                        </th>
-                                                        <th align="left">
-                                                            <a  href="\authors">Authors</a>
-                                                        </th>
-                                                        <th align="left">
-                                                            <a  href="\genres">Genres</a>
-                                                        </th>
-                                                        <th align="left">
-                                                            <a  href="\bookcomments">Book comments</a>
-                                                        </th>
+                                                        <th th:align="left">Metric</th>
+                                                        <th th:align="cener">Value</th>
                                                     </tr>
-                                                    </tbody>
+                                                    </thead>
+                                                    <tbody>
+
+                                                    <tr th:each="metric: ${info}">
+                                                        <td th:text="${metric.key}">key</td>
+                                                        <td th:text="${metric.value}">value</td>
+                                                    </tr>
+
                                                 </table>
                                             </td>
                                         </tr>
