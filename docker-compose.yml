@@ -1,0 +1,24 @@
+version: '3.0'
+services:
+  postgres_db:
+    image: postgres:11.2
+    environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=123
+        - POSTGRES_DB=librarydb
+    ports:
+        - "5432:5432"
+    volumes:
+        - database:/var/lib/postgresql/data
+  library:
+    build: .
+    depends_on:
+        - postgres_db
+    environment:
+        - SPRING_DATASOURCE_URL = jdbc:postgresql://postgres_db:5432/librarydb
+        - SPRING_DATASOURCE_USERNAME = postgres
+        - SPRING_DATASOURCE_PASSWORD =123 
+    ports:
+        - "8080:8080"
+volumes:
+  database:

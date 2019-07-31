@@ -14,6 +14,7 @@ import ru.otus.domain.Author;
 import ru.otus.repository.AuthorRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +51,7 @@ class AuthorControllerTest {
     public void setUp(){
         author = new Author(NAME1, SURNAME1);
         authors = new ArrayList<>(
-                List.of(new Author(1,NAME1,SURNAME1)
+                Arrays.asList(new Author(1,NAME1,SURNAME1)
                        ,new Author(2, NAME2, SURNAME2)
                         ,new Author(3,NAME3,SURNAME3)));
     }

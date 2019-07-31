@@ -18,6 +18,7 @@ import ru.otus.repository.BookRepository;
 import ru.otus.repository.GenreRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +52,7 @@ class BookControllerTest {
     public void setUp(){
         book = new Book("Snuff",new Author("Viktor","Pelevin"), new Genre("sci-fi"));
         books = new ArrayList<>(
-                List.of(new Book("Red Cross",new Author("Alexander","Filipenko"), new Genre("drama"))
+                Arrays.asList(new Book("Red Cross",new Author("Alexander","Filipenko"), new Genre("drama"))
                         ,new Book("Aristonomia",new Author("Boris","Akunin"), new Genre("drama"))));
 
     }
@@ -80,8 +81,8 @@ class BookControllerTest {
 
     @Test
     void editBook() throws Exception {
-        given(authorRepository.findAll()).willReturn(List.of(new Author(1,"Leo","Tolstoy")));
-        given(genreRepository.findAll()).willReturn(List.of(new Genre(1,"drama")));
+        given(authorRepository.findAll()).willReturn(Arrays.asList(new Author(1,"Leo","Tolstoy")));
+        given(genreRepository.findAll()).willReturn(Arrays.asList(new Genre(1,"drama")));
         given(bookRepository.findById(any()))
                 .willReturn( Optional.of(book));
         mvc.perform(post("/editbook").param("id", "1"))
