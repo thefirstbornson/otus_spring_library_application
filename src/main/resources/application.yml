@@ -15,3 +15,9 @@ spring:
           use_jdbc_metadata_defaults : false
     hibernate:
       ddl-auto: none
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include : hystrix.stream
